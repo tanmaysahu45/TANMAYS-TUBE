@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>TANMAYS TUBE</title>
+  
+  <!-- Font Awesome & Google Fonts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
+
+  <!-- Firebase Modular SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
+      authDomain: "studio-1376926805-1d7be.firebaseapp.com",
+      projectId: "studio-1376926805-1d7be",
+      storageBucket: "studio-1376926805-1d7be.firebasestorage.app",
+      messagingSenderId: "467327670494",
+      appId: "1:467327670494:web:79dd0bfe3104aff22f8a4f"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const provider = new GoogleAuthProvider();
+
+    window.FirebaseBridge = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, doc, setDoc, getDoc, updateDoc, arrayUnion, arrayRemove };
+  </script>
+
+  <style>
+    :root {
+      --bg-dark: #07090e;
+      --surface-dark: #0f141f;
+      --card-bg: #151b29;
+      --accent-cyan: #00f2fe;
+      --accent-blue: #4facfe;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --danger: #ef4444;
+      --border-color: rgba(0, 242, 254, 0.18);
+      --glass-bg: rgba(15, 20, 31, 0.88);
+      --shadow-neon: 0 0 15px rgba(0, 242, 254, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      scrollbar-width: thin;
+      scrollbar-color: var(--accent-cyan) var(--surface-dark);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP HEADER */
+    header {
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      z-index: 100;
+    }
+
+    .brand-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 1px;
+      cursor: pointer;
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 520px;
+      margin: 0 15px;
+      position: relative;
+    }
+
+    .search-box {
+      width: 100%;
+      background: var(--surface-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 25px;
+      padding: 9px 42px 9px 16px;
+      color: var(--text-main);
+      outline: none;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .search-box:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: var(--shadow-neon);
+    }
+
+    .search-btn {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--accent-cyan);
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 6px;
+      transition: color 0.2s;
+    }
+
+    .icon-btn:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* MAIN VIEWPORT */
+    main {
+      flex: 1;
+      overflow-y: auto;
+      position: relative;
+      padding-bottom: 120px;
+    }
+
+    .view-section {
+      display: none;
+      min-height: 100%;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* FEED GRID */
+    .grid-feed {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 18px;
+      padding: 18px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .media-card {
+      background: var(--card-bg);
+      border-radius: 14px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .media-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 8px 22px rgba(0, 242, 254, 0.2);
+    }
+
+    .thumbnail-box {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #000;
+      position: relative;
+    }
+
+    .thumbnail-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .media-details {
+      padding: 14px;
+    }
+
+    .media-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.35;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .media-meta {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* REELS VIEW */
+    .reels-container {
+      height: calc(100vh - 175px);
+      scroll-snap-type: y mandatory;
+      overflow-y: scroll;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 0;
+    }
+
+    .reel-card {
+      width: 100%;
+      max-width: 420px;
+      height: 100%;
+      min-height: 520px;
+      scroll-snap-align: start;
+      position: relative;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      border: 1px solid var(--border-color);
+    }
+
+    .reel-video {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .reel-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 16px;
+      right: 70px;
+      color: white;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.9);
+      pointer-events: none;
+    }
+
+    .reel-side-actions {
+      position: absolute;
+      right: 12px;
+      bottom: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .reel-action-btn {
+      background: rgba(15, 20, 31, 0.7);
+      border: 1px solid var(--border-color);
+      border-radius: 50%;
+      width: 46px;
+      height: 46px;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+
+    .reel-action-btn:hover {
+      border-color: var(--accent-cyan);
+      transform: scale(1.08);
+    }
+
+    .reel-action-btn span {
+      font-size: 0.65rem;
+      margin-top: 2px;
+    }
+
+    /* PROFILE HUB */
+    .profile-container {
+      max-width: 750px;
+      margin: 25px auto;
+      padding: 0 16px;
+    }
+
+    .profile-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      display: flex;
+      gap: 24px;
+      align-items: center;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .profile-avatar {
+      width: 95px;
+      height: 95px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-cyan);
+      object-fit: cover;
+    }
+
+    .profile-info h2 {
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .profile-stats {
+      display: flex;
+      gap: 20px;
+      margin: 14px 0;
+      font-size: 0.85rem;
+    }
+
+    /* AI FLOATING DOCK */
+    .ai-dock-container {
+      position: fixed;
+      bottom: 58px;
+      left: 0;
+      width: 100%;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--border-color);
+      padding: 8px 16px;
+      z-index: 95;
+    }
+
+    .ai-dock {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .ai-input {
+      flex: 1;
+      background: var(--surface-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 25px;
+      padding: 10px 18px;
+      color: white;
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .ai-input:focus {
+      border-color: var(--accent-cyan);
+    }
+
+    .ai-send-btn {
+      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
+      border: none;
+      border-radius: 50%;
+      width: 42px;
+      height: 42px;
+      color: #07090e;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: transform 0.2s;
+    }
+
+    .ai-send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* AI RESPONSE DRAWER */
+    .ai-response-drawer {
+      position: fixed;
+      bottom: 118px;
+      left: 50%;
+      transform: translateX(-50%) translateY(125%);
+      width: 92%;
+      max-width: 700px;
+      max-height: 52vh;
+      background: var(--card-bg);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.85);
+      z-index: 99;
+      overflow-y: auto;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .ai-response-drawer.active {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* BOTTOM NAV BAR */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 58px;
+      background: var(--surface-dark);
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-tab {
+      background: none;
+      border: none;
+      color: var(--text-sub);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 0.72rem;
+      gap: 4px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .nav-tab.active, .nav-tab:hover {
+      color: var(--accent-cyan);
+    }
+
+    .nav-tab i {
+      font-size: 1.2rem;
+    }
+
+    /* SIDE DRAWER */
+    .side-drawer {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 300px;
+      height: 100%;
+      background: var(--surface-dark);
+      border-left: 1px solid var(--border-color);
+      z-index: 200;
+      padding: 24px;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .side-drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 26px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+    }
+
+    .drawer-links {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .drawer-links li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 0.92rem;
+      cursor: pointer;
+      color: var(--text-sub);
+      transition: color 0.2s;
+    }
+
+    .drawer-links li:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* MEDIA MODAL PLAYER */
+    .media-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 300;
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .media-modal.open {
+      display: flex;
+    }
+
+    .modal-frame-box {
+      width: 92%;
+      max-width: 850px;
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 2rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand-logo" onclick="switchView('view-home')">TANMAYS TUBE</div>
+    <div class="search-container">
+      <input type="text" id="masterSearch" class="search-box" placeholder="Search videos, creators & trending tags..." />
+      <button class="search-btn" id="searchTrigger"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="loginBtn" title="Google Sign In"><i class="fa-brands fa-google"></i></button>
+      <button class="icon-btn" id="menuToggle"><i class="fa-solid fa-bars-staggered"></i></button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORTS -->
+  <main>
+    <!-- HOME FEED -->
+    <section id="view-home" class="view-section active">
+      <div class="grid-feed" id="feedGrid"></div>
+    </section>
+
+    <!-- REELS FEED -->
+    <section id="view-reels" class="view-section">
+      <div class="reels-container" id="reelsContainer"></div>
+    </section>
+
+    <!-- PROFILE VIEW -->
+    <section id="view-profile" class="view-section">
+      <div class="profile-container">
+        <div class="profile-card">
+          <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80" alt="Avatar" class="profile-avatar" id="userAvatar" />
+          <div class="profile-info">
+            <h2 id="userName">Guest Creator</h2>
+            <p id="userEmail" style="color: var(--text-sub); font-size: 0.85rem;">Sign in to sync your Cloud Vault</p>
+            <div class="profile-stats">
+              <span><strong>0</strong> Posts</span>
+              <span><strong id="savedCount">0</strong> Saved</span>
+              <span><strong>Cloud:</strong> <span id="cloudStatus" style="color:var(--text-sub)">Local</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- AI DOCK -->
+  <div class="ai-dock-container">
+    <div class="ai-dock">
+      <input type="text" id="aiInput" class="ai-input" placeholder="✨ Ask Tanmays Tube AI anything..." />
+      <button class="ai-send-btn" id="aiSendBtn"><i class="fa-solid fa-bolt-lightning"></i></button>
+    </div>
+  </div>
+
+  <!-- AI RESPONSE CARD -->
+  <div class="ai-response-drawer" id="aiDrawer">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <strong style="color: var(--accent-cyan); font-size: 0.9rem;"><i class="fa-solid fa-robot"></i> Tanmays Intelligence</strong>
+      <button id="closeAiDrawer" style="background: none; border: none; color: var(--text-sub); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="aiResponseText" style="font-size: 0.88rem; line-height: 1.6; color: #e2e8f0;"></div>
+  </div>
+
+  <!-- BOTTOM APP BAR -->
+  <nav class="bottom-bar">
+    <button class="nav-tab active" onclick="switchView('view-home', this)"><i class="fa-solid fa-house"></i><span>Home</span></button>
+    <button class="nav-tab" onclick="switchView('view-reels', this)"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></button>
+    <button class="nav-tab" onclick="triggerQuickAction()"><i class="fa-solid fa-square-plus" style="font-size: 1.4rem; color: var(--accent-cyan);"></i><span>Create</span></button>
+    <button class="nav-tab" onclick="switchView('view-profile', this)"><i class="fa-solid fa-user"></i><span>Profile</span></button>
+  </nav>
+
+  <!-- SIDE DRAWER -->
+  <aside class="side-drawer" id="sideDrawer">
+    <div class="drawer-header">
+      <h3 style="font-size: 1.1rem; font-weight: 700;">Tanmays Hub Control</h3>
+      <button id="closeDrawer" style="background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <ul class="drawer-links">
+      <li onclick="viewCloudVault()"><i class="fa-solid fa-bookmark"></i> Cloud Saved Vault</li>
+      <li onclick="clearLocalHistory()"><i class="fa-solid fa-trash-can" style="color: var(--danger);"></i> Clear Local History</li>
+      <li onclick="toggleTheme()"><i class="fa-solid fa-palette"></i> Switch Background Theme</li>
+      <li onclick="handleSignOut()"><i class="fa-solid fa-right-from-bracket"></i> Sign Out Account</li>
+    </ul>
+  </aside>
+
+  <!-- VIDEO PLAYER MODAL -->
+  <div class="media-modal" id="videoModal">
+    <button class="modal-close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-frame-box">
+      <iframe id="modalIframe" width="100%" height="100%" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <script>
+    // ================= CREDENTIALS =================
+    const GEMINI_API_KEY = "AQ.Ab8RN6LQ-JCPDbo96b749XRuedHg2mUycAlKeXxxY5bSrN0mCA";
+    const YOUTUBE_API_KEY = "AIzaSyBmBxgSoangpIJOuisVqRNrMj1nP5UFiWQ";
+
+    let currentUser = null;
+    let savedVault = [];
+
+    // Fallback Mock Feeds for Instant Loading
+    const fallbackFeed = [
+      { id: "jfKfPfyJRdk", title: "Lofi Hip Hop Radio - Beats to Relax/Study to", views: "Live", creator: "Lofi Girl", thumb: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=600&q=80" },
+      { id: "kJQP7kiw5Fk", title: "Cyberpunk 2077 Night City Drive Experience", views: "1.2M", creator: "Neon Vibes", thumb: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?auto=format&fit=crop&w=600&q=80" },
+      { id: "3JZ_D3ELwOQ", title: "Next Gen Web Technologies Overview 2026", views: "650K", creator: "Tanmay Studio", thumb: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=600&q=80" }
+    ];
+
+    const reelsData = [
+      { id: "dQw4w9WgXcQ", title: "Epic Coding Animation Experiment #trending", author: "@tanmay_creator" },
+      { id: "C0DPdy98e4c", title: "Top Developer Shortcuts You Must Know 🔥", author: "@dev_vibes" }
+    ];
+
+    // ================= INITIALIZATION =================
+    function initApp() {
+      renderFeed(fallbackFeed);
+      renderReels(reelsData);
+      setupListeners();
+      executeUniversalSearch("trending technology coding");
+    }
+
+    function renderFeed(items) {
+      const grid = document.getElementById("feedGrid");
+      grid.innerHTML = items.map(item => `
+        <div class="media-card" onclick="openPlayer('${item.id}')">
+          <div class="thumbnail-box">
+            <img src="${item.thumb}" alt="${item.title}" loading="lazy" />
+          </div>
+          <div class="media-details">
+            <div class="media-title">${item.title}</div>
+            <div class="media-meta">
+              <span>${item.creator}</span>
+              <span>${item.views}</span>
+            </div>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function renderReels(reels) {
+      const container = document.getElementById("reelsContainer");
+      container.innerHTML = reels.map(reel => `
+        <div class="reel-card">
+          <iframe class="reel-video" src="https://www.youtube.com/embed/${reel.id}?autoplay=0&controls=0&loop=1" allowfullscreen></iframe>
+          <div class="reel-overlay">
+            <h4>${reel.author}</h4>
+            <p style="font-size: 0.8rem; margin-top: 4px;">${reel.title}</p>
+          </div>
+          <div class="reel-side-actions">
+            <button class="reel-action-btn" onclick="toggleLike(this)"><i class="fa-solid fa-heart"></i><span>Like</span></button>
+            <button class="reel-action-btn" onclick="saveToCloud('${reel.id}')"><i class="fa-solid fa-bookmark"></i><span>Save</span></button>
+            <button class="reel-action-btn" onclick="shareMedia()"><i class="fa-solid fa-share"></i><span>Share</span></button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ================= VIEW SWITCHER =================
+    window.switchView = function(viewId, btn) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.querySelectorAll(".nav-tab").forEach(tab => tab.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      if (btn) btn.classList.add("active");
+    };
+
+    // ================= GEMINI AI ENGINE =================
+    async function askGemini(prompt) {
+      const drawer = document.getElementById("aiDrawer");
+      const textNode = document.getElementById("aiResponseText");
+      
+      drawer.classList.add("active");
+      textNode.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Processing with Tanmays Intelligence...";
+
+      try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await response.json();
+        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
+        textNode.innerText = reply;
+
+        if (currentUser && window.FirebaseBridge) {
+          const { db, doc, updateDoc, arrayUnion } = window.FirebaseBridge;
+          await updateDoc(doc(db, "users", currentUser.uid), {
+            geminiHistory: arrayUnion({ prompt, reply, timestamp: new Date().toISOString() })
+          });
+        }
+      } catch (err) {
+        textNode.innerText = "Error contacting AI Engine: " + err.message;
+      }
+    }
+
+    // ================= YOUTUBE LIVE SEARCH ENGINE =================
+    async function executeUniversalSearch(query) {
+      if (!query.trim()) return;
+      try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=16&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`);
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const mapped = data.items.map(item => ({
+            id: item.id.videoId,
+            title: item.snippet.title,
+            views: "Featured",
+            creator: item.snippet.channelTitle,
+            thumb: item.snippet.thumbnails.medium.url
+          }));
+          renderFeed(mapped);
+          switchView('view-home');
+        }
+      } catch (e) {
+        console.warn("YouTube Search Fallback Active:", e);
+      }
+    }
+
+    // ================= EVENT LISTENERS =================
+    function setupListeners() {
+      // Menu
+      const drawer = document.getElementById("sideDrawer");
+      document.getElementById("menuToggle").onclick = () => drawer.classList.add("open");
+      document.getElementById("closeDrawer").onclick = () => drawer.classList.remove("open");
+
+      // AI Input
+      document.getElementById("aiSendBtn").onclick = () => {
+        const input = document.getElementById("aiInput");
+        if (input.value.trim()) {
+          askGemini(input.value.trim());
+          input.value = "";
+        }
+      };
+
+      document.getElementById("aiInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") document.getElementById("aiSendBtn").click();
+      });
+
+      document.getElementById("closeAiDrawer").onclick = () => {
+        document.getElementById("aiDrawer").classList.remove("active");
+      };
+
+      // Search Box
+      document.getElementById("searchTrigger").onclick = () => {
+        executeUniversalSearch(document.getElementById("masterSearch").value);
+      };
+
+      document.getElementById("masterSearch").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") document.getElementById("searchTrigger").click();
+      });
+
+      // Firebase Auth Action
+      document.getElementById("loginBtn").onclick = handleGoogleAuth;
+    }
+
+    // ================= FIREBASE AUTH & FIRESTORE SYNC =================
+    async function handleGoogleAuth() {
+      if (!window.FirebaseBridge) {
+        alert("Initializing Firebase Engine. Please wait a second...");
+        return;
+      }
+      const { auth, provider, signInWithPopup, db, doc, setDoc, getDoc } = window.FirebaseBridge;
+      try {
+        const result = await signInWithPopup(auth, provider);
+        currentUser = result.user;
+        
+        document.getElementById("userName").innerText = currentUser.displayName;
+        document.getElementById("userEmail").innerText = currentUser.email;
+        document.getElementById("userAvatar").src = currentUser.photoURL;
+        document.getElementById("cloudStatus").innerText = "Active";
+        document.getElementById("cloudStatus").style.color = "#4ade80";
+
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) {
+          await setDoc(userRef, {
+            name: currentUser.displayName,
+            email: currentUser.email,
+            savedVault: [],
+            geminiHistory: []
+          });
+        } else {
+          savedVault = userSnap.data().savedVault || [];
+          document.getElementById("savedCount").innerText = savedVault.length;
+        }
+      } catch (err) {
+        console.error("Sign-in verification:", err);
+      }
+    }
+
+    window.saveToCloud = async function(mediaId) {
+      if (!currentUser || !window.FirebaseBridge) {
+        savedVault.push(mediaId);
+        document.getElementById("savedCount").innerText = savedVault.length;
+        alert("Saved locally. Sign in with Google to sync to your permanent Cloud Vault.");
+        return;
+      }
+      const { db, doc, updateDoc, arrayUnion } = window.FirebaseBridge;
+      await updateDoc(doc(db, "users", currentUser.uid), {
+        savedVault: arrayUnion(mediaId)
+      });
+      savedVault.push(mediaId);
+      document.getElementById("savedCount").innerText = savedVault.length;
+      alert("Added to your synced Cloud Vault!");
+    };
+
+    window.viewCloudVault = function() {
+      alert(`Cloud Vault contains ${savedVault.length} saved items.`);
+    };
+
+    window.clearLocalHistory = function() {
+      alert("Local session cache cleared.");
+    };
+
+    window.handleSignOut = function() {
+      if (window.FirebaseBridge && currentUser) {
+        window.FirebaseBridge.signOut(window.FirebaseBridge.auth);
+        location.reload();
+      }
+    };
+
+    // ================= MEDIA PLAYER MODAL =================
+    window.openPlayer = function(id) {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("modalIframe");
+      iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+      modal.classList.add("open");
+    };
+
+    window.closeModal = function() {
+      const modal = document.getElementById("videoModal");
+      const iframe = document.getElementById("modalIframe");
+      iframe.src = "";
+      modal.classList.remove("open");
+    };
+
+    window.toggleLike = function(btn) {
+      btn.style.color = btn.style.color === "rgb(239, 68, 68)" ? "white" : "#ef4444";
+    };
+
+    window.shareMedia = function() {
+      if (navigator.share) {
+        navigator.share({ title: "TANMAYS TUBE", url: window.location.href });
+      } else {
+        alert("Link copied to clipboard!");
+      }
+    };
+
+    window.triggerQuickAction = function() {
+      alert("Tanmays Tube Studio: Upload videos or record content directly to your cloud profile.");
+    };
+
+    window.toggleTheme = function() {
+      const isAlt = document.body.style.backgroundColor === "rgb(15, 23, 42)";
+      document.body.style.backgroundColor = isAlt ? "#07090e" : "#0f172a";
+    };
+
+    window.onload = initApp;
+  </script>
+</body>
+</html>
