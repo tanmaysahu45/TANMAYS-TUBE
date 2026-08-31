@@ -1,351 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>TANMAYS TUBE</title>
-  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-
-  <style>
-    :root {
-      --bg-dark: #0f0f0f;
-      --surface-dark: #212121;
-      --text-main: #f1f1f1;
-      --text-sub: #aaaaaa;
-      --accent-blue: #3ea6ff;
-      --header-height: 56px;
-      --bottom-nav-height: 56px;
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto', sans-serif; -webkit-tap-highlight-color: transparent; }
-    body { background-color: var(--bg-dark); color: var(--text-main); height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
-
-    /* HEADER */
-    header { height: var(--header-height); background: var(--bg-dark); display: flex; align-items: center; padding: 0 12px; justify-content: space-between; border-bottom: 1px solid #222; z-index: 100; }
-    .brand-logo { font-size: 1.1rem; font-weight: 900; display: flex; align-items: center; gap: 5px; }
-    .brand-logo i { color: var(--accent-blue); font-size: 1.3rem; }
-    
-    .search-container { flex: 1; display: flex; align-items: center; background: #222; border-radius: 20px; padding: 4px 12px; border: 1px solid #333; margin: 0 10px; }
-    .search-box { flex: 1; background: transparent; border: none; color: white; padding: 6px 5px; font-size: 0.95rem; outline: none; }
-    .search-btn { background: none; border: none; color: var(--text-main); font-size: 1.1rem; padding: 4px; cursor: pointer; }
-    
-    .header-icons i { font-size: 1.3rem; cursor: pointer; }
-
-    /* MAIN */
-    main { flex: 1; height: calc(100dvh - var(--header-height) - var(--bottom-nav-height)); overflow-y: auto; position: relative; }
-    .view-section { display: none; min-height: 100%; padding-bottom: 20px; }
-    .view-section.active { display: block; }
-
-    /* HOME FEED */
-    .grid-feed { display: flex; flex-direction: column; gap: 12px; }
-    .media-card { width: 100%; cursor: pointer; }
-    .thumbnail-box { width: 100vw; aspect-ratio: 16/9; background: #222; position: relative; }
-    .thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
-    .media-info { padding: 12px 15px; display: flex; gap: 12px; }
-    .channel-pic { width: 36px; height: 36px; border-radius: 50%; background: #333; }
-    .media-text { flex: 1; }
-    .media-title { font-size: 0.95rem; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
-    .media-meta { font-size: 0.8rem; color: var(--text-sub); }
-
-    /* PLAYER */
-    #tab-player { background: var(--bg-dark); z-index: 50; position: absolute; top: 0; left: 0; width: 100%; }
-    .player-video-container { width: 100vw; aspect-ratio: 16/9; background: #000; position: sticky; top: 0; z-index: 10; }
-    .player-video-container iframe { width: 100%; height: 100%; border: none; }
-    .player-details { padding: 15px; }
-    .player-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 5px; }
-    .player-views { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px; }
-
-    /* PROFILE */
-    .profile-header { padding: 20px; border-bottom: 1px solid #222; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
-    .prof-pic { width: 90px; height: 90px; border-radius: 50%; background: #333; object-fit: cover; border: 2px solid var(--accent-blue); }
-    .prof-name { font-size: 1.3rem; font-weight: 700; }
-    .prof-email { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 10px; }
-    .btn-login { background: var(--accent-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; max-width: 200px; }
-    .btn-logout { background: #ff4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: none; margin-top: 10px; }
-
-    /* REELS */
-    .reels-container { height: 100%; background: #000; scroll-snap-type: y mandatory; overflow-y: scroll; }
-    .reel-card { width: 100vw; height: calc(100dvh - var(--header-height) - var(--bottom-nav-height)); scroll-snap-align: start; position: relative; }
-    .reel-card video { width: 100%; height: 100%; object-fit: cover; }
-    
-    .reel-ui-wrapper { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 15px; }
-    .r-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: white; }
-    .r-user img { width: 36px; height: 36px; border-radius: 50%; }
-    .reel-right-actions { display: flex; flex-direction: column; gap: 20px; align-items: center; color: white; font-size: 1.8rem; }
-    
-    /* AI CHAT */
-    .ai-fab { position: fixed; bottom: 80px; right: 15px; width: 55px; height: 55px; border-radius: 50%; background: #fff; color: #000; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 150; cursor: pointer; }
-    .ai-chat-window { position: fixed; bottom: -100%; left: 0; width: 100%; height: 75dvh; background: #1a1a1a; border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 200; transition: 0.3s; display: flex; flex-direction: column; }
-    .ai-chat-window.open { bottom: 0; }
-    .ai-header { padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-weight: 600; }
-    .ai-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-    .msg { padding: 10px 15px; border-radius: 18px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
-    .msg-user { background: var(--accent-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
-    .msg-ai { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .ai-footer { padding: 10px; display: flex; gap: 10px; border-top: 1px solid #333; }
-    .ai-footer input { flex: 1; border-radius: 20px; border: none; background: #222; padding: 12px; color: white; outline: none; }
-    .ai-footer button { background: none; border: none; color: var(--accent-blue); font-size: 1.5rem; }
-
-    /* BOTTOM NAV */
-    .bottom-bar { height: var(--bottom-nav-height); background: var(--bg-dark); border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; z-index: 100; }
-    .nav-tab { background: none; border: none; color: var(--text-main); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; cursor: pointer; opacity: 0.6; }
-    .nav-tab i { font-size: 1.5rem; }
-    .nav-tab.active { opacity: 1; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050505">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>TANMAYS TUBE</title>
+<link rel="preconnect" href="https://www.googleapis.com">
+<link rel="preconnect" href="https://www.gstatic.com">
+<style>
+*{box-sizing:border-box}
+:root{
+  --bg:#050505;--surface:#151515;--surface2:#212121;--line:#2b2b2b;
+  --text:#f5f5f5;--muted:#aaa;--blue:#3ea6ff;--cyan:#00f2fe;--danger:#ff3040;
+  --nav:70px;--head:68px
+}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;overflow:hidden}
+button,input{font:inherit}
+button{color:inherit}
+#app{height:100dvh;position:relative;background:#000}
+header{
+  position:fixed;z-index:100;top:0;left:0;right:0;height:var(--head);
+  display:flex;align-items:center;gap:9px;padding:9px 12px;
+  background:rgba(5,5,5,.94);backdrop-filter:blur(18px);border-bottom:1px solid #171717
+}
+.brand{font-weight:900;letter-spacing:-.8px;font-size:18px;white-space:nowrap}
+.brand b{color:var(--cyan)}
+.search-wrap{flex:1;position:relative}
+#search{
+  width:100%;height:43px;border:1px solid #3a3a3a;border-radius:22px;
+  outline:none;background:#171717;color:#fff;padding:0 42px 0 16px;
+  transition:.2s;min-width:0
+}
+#search:focus{border-color:var(--blue);box-shadow:0 0 0 3px #3ea6ff18}
+.icon-btn,.nav-btn,.action-btn,.drawer-btn{
+  border:1px solid transparent;background:transparent;cursor:pointer;
+  transition:transform .14s,border-color .2s,background .2s,color .2s
+}
+.icon-btn:active,.nav-btn:active,.action-btn:active,.drawer-btn:active{transform:scale(.9)}
+.icon-btn{width:40px;height:40px;border-radius:50%;font-size:19px}
+.icon-btn:hover{border-color:#333;background:#181818}
+#searchBtn{position:absolute;right:2px;top:2px;width:39px;height:39px;border-radius:50%;border:0;background:transparent;cursor:pointer}
+#main{position:absolute;top:var(--head);bottom:var(--nav);left:0;right:0;overflow:hidden}
+.view{display:none;height:100%;overflow-y:auto;overscroll-behavior:contain}
+.view.active{display:block}
+#homeView{padding-bottom:24px}
+.pull-indicator{height:0;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--blue);transition:height .18s}
+.spinner{width:21px;height:21px;border:3px solid #ffffff22;border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.feed{max-width:900px;margin:auto}
+.card{background:#080808;border-bottom:1px solid #1b1b1b;cursor:pointer}
+.thumb-wrap{position:relative;aspect-ratio:16/9;background:#111;overflow:hidden}
+.thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.duration{position:absolute;right:7px;bottom:7px;background:#000d;padding:3px 6px;border-radius:4px;font-size:12px}
+.card-info{display:flex;gap:11px;padding:10px 12px 15px}
+.avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:#222}
+.card-title{font-size:15px;font-weight:700;line-height:1.35;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.meta{font-size:12px;color:var(--muted)}
+.empty{padding:45px 20px;text-align:center;color:var(--muted)}
+#playerView{background:#000}
+.player-video{width:100%;aspect-ratio:16/9;background:#000;position:sticky;top:0;z-index:4}
+.player-video iframe{width:100%;height:100%;border:0}
+.player-body{padding:15px;max-width:900px;margin:auto}
+.back{display:inline-flex;align-items:center;gap:7px;margin-bottom:10px}
+.player-title{font-size:19px;font-weight:800;line-height:1.3}
+.player-meta{color:var(--muted);font-size:13px;margin:7px 0 15px}
+.channel-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid #1d1d1d;border-bottom:1px solid #1d1d1d}
+.channel-name{font-weight:750}
+.channel-sub{font-size:12px;color:var(--muted)}
+.subscribe{margin-left:auto;border:1px solid var(--blue);color:#fff;background:#12314a;border-radius:20px;padding:9px 14px;font-weight:800;cursor:pointer}
+.actions{display:flex;gap:8px;overflow-x:auto;padding:13px 0;scrollbar-width:none}
+.actions::-webkit-scrollbar{display:none}
+.action-btn{border-color:#333;background:#161616;border-radius:20px;padding:9px 13px;white-space:nowrap}
+.action-btn.active{border-color:var(--blue);color:var(--blue)}
+#reelsView{overflow-y:auto;scroll-snap-type:y mandatory;background:#000}
+.reel{height:100%;min-height:100%;position:relative;scroll-snap-align:start;scroll-snap-stop:always;background:#111;overflow:hidden}
+.reel video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#000}
+.reel:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#000c 0%,transparent 42%,#0002 100%);pointer-events:none}
+.reel-left{position:absolute;z-index:2;left:15px;right:68px;bottom:22px}
+.reel-user{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.reel-user img{width:39px;height:39px;border-radius:50%;border:1px solid #fff;object-fit:cover}
+.follow{border:1px solid #fff;background:#0006;border-radius:17px;padding:5px 11px;font-size:12px;font-weight:800;cursor:pointer}
+.caption{font-size:14px;line-height:1.4;max-width:620px}
+.audio{font-size:12px;margin-top:8px;color:#ddd}
+.reel-actions{position:absolute;z-index:3;right:10px;bottom:20px;width:50px;display:flex;flex-direction:column;align-items:center;gap:18px}
+.reel-act{border:0;background:transparent;font-size:25px;cursor:pointer;width:46px;min-height:45px}
+.reel-act small{display:block;font-size:10px;margin-top:2px}
+.reel-act.liked{color:var(--danger);animation:heart .35s ease}
+@keyframes heart{0%{transform:scale(1)}45%{transform:scale(1.4)}100%{transform:scale(1)}}
+#youView{padding:25px 15px 35px}
+.profile{max-width:650px;margin:auto;text-align:center}
+.profile-avatar{width:92px;height:92px;border-radius:50%;object-fit:cover;border:2px solid #333}
+.profile-name{font-size:21px;font-weight:900;margin-top:10px}
+.profile-email{font-size:12px;color:var(--muted);margin:4px 0}
+.bio{white-space:pre-line;color:#ddd;line-height:1.55;margin:14px 0}
+.profile-actions{display:flex;gap:9px;justify-content:center}
+.outline{border:1px solid #444;background:#111;border-radius:10px;padding:10px 16px;cursor:pointer}
+.outline.primary{border-color:var(--blue);background:#0c2940}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:24px}
+.grid img{width:100%;aspect-ratio:1;object-fit:cover;background:#151515}
+#bottomNav{
+  position:fixed;z-index:100;left:0;right:0;bottom:0;height:var(--nav);
+  display:flex;align-items:center;justify-content:space-around;
+  background:rgba(8,8,8,.97);border-top:1px solid #222;padding-bottom:env(safe-area-inset-bottom)
+}
+.nav-btn{height:58px;min-width:65px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:19px}
+.nav-btn span{font-size:10px}
+.nav-btn.active{color:var(--cyan)}
+.create-btn{width:54px;height:54px;border-radius:18px;border:1px solid var(--cyan);background:#0b2228;font-size:28px;box-shadow:0 0 18px #00f2fe1c}
+#createView{padding:25px 15px;overflow-y:auto}
+.create-box{max-width:650px;margin:auto;background:#101010;border:1px solid #292929;border-radius:18px;padding:20px}
+.create-box h2{margin-top:0}
+.drop{border:1px dashed #555;border-radius:14px;padding:30px 15px;text-align:center;color:#bbb}
+.drop input{margin-top:15px;max-width:100%}
+#aiFab{position:fixed;z-index:101;right:15px;bottom:calc(var(--nav) + 15px);width:54px;height:54px;border-radius:18px;border:1px solid var(--cyan);background:#09242b;color:#fff;font-size:23px;box-shadow:0 8px 35px #000;cursor:pointer;transition:.2s}
+#aiFab:active{transform:scale(.9) rotate(-4deg)}
+#chatSheet{position:fixed;z-index:300;left:0;right:0;bottom:0;height:75dvh;background:#0d0d0d;border:1px solid #333;border-radius:22px 22px 0 0;transform:translateY(105%);transition:transform .3s ease;display:flex;flex-direction:column;box-shadow:0 -20px 70px #000}
+#chatSheet.open{transform:translateY(0)}
+.chat-head{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:1px solid #292929}
+.chat-title{font-weight:900}.chat-title b{color:var(--cyan)}
+#chatMessages{flex:1;overflow-y:auto;padding:15px}
+.msg{max-width:84%;padding:10px 12px;border-radius:15px;margin:7px 0;line-height:1.4;font-size:14px;white-space:pre-wrap}
+.msg.user{margin-left:auto;background:#14568a;border-bottom-right-radius:5px}
+.msg.ai{background:#1b1b1b;border-bottom-left-radius:5px}
+.msg.error{background:#4b1117;color:#ff9da6}
+.typing{display:inline-flex;gap:4px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#aaa;animation:bounce .8s infinite alternate}.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{to{transform:translateY(-5px);opacity:.4}}
+.chat-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid #292929;padding-bottom:calc(10px + env(safe-area-inset-bottom))}
+#chatInput{flex:1;border:1px solid #3b3b3b;background:#181818;color:#fff;border-radius:21px;padding:11px 14px;outline:none}
+#chatSend{width:45px;height:45px;border:1px solid var(--blue);border-radius:50%;background:#102d42;cursor:pointer}
+#drawerOverlay{position:fixed;inset:0;background:#0009;z-index:250;display:none}
+#drawerOverlay.open{display:block}
+#drawer{position:absolute;right:0;top:0;bottom:0;width:min(88vw,350px);background:#101010;border-left:1px solid #333;padding:20px 14px;transform:translateX(100%);transition:.28s}
+#drawerOverlay.open #drawer{transform:translateX(0)}
+.drawer-title{font-size:20px;font-weight:900;margin-bottom:18px}
+.drawer-btn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:12px;margin:4px 0;border-color:transparent}
+.drawer-btn:hover{background:#191919;border-color:#2b2b2b}
+.drawer-btn.logout{color:#ff6671;border-color:#4b2024}
+.toast{position:fixed;z-index:500;left:50%;bottom:calc(var(--nav) + 20px);transform:translate(-50%,20px);background:#222;border:1px solid #444;padding:10px 14px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;font-size:13px}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.install-banner{position:fixed;z-index:180;left:12px;right:12px;bottom:calc(var(--nav) + 12px);background:#151515;border:1px solid #333;border-radius:16px;padding:12px;display:none;align-items:center;gap:10px;box-shadow:0 10px 35px #000}
+.install-banner.show{display:flex}.install-banner .txt{flex:1;font-size:13px}.install-banner button{border:1px solid var(--blue);background:#102d42;border-radius:10px;padding:8px 12px;cursor:pointer}
+@media(min-width:800px){
+  :root{--head:72px;--nav:76px}
+  header{padding-left:24px;padding-right:24px}
+  .brand{font-size:22px}
+  #main{max-width:1000px;margin:auto;left:0;right:0}
+  #bottomNav{left:50%;right:auto;transform:translateX(-50%);width:min(650px,100%);border:1px solid #222;border-bottom:0;border-radius:20px 20px 0 0}
+}
+</style>
 </head>
 <body>
+<div id="app">
+<header>
+  <div class="brand">TANMAYS <b>TUBE</b></div>
+  <div class="search-wrap">
+    <input id="search" autocomplete="off" placeholder="Search videos, creators, reels..." aria-label="Search">
+    <button id="searchBtn" title="Search">⌕</button>
+  </div>
+  <button class="icon-btn" id="voiceBtn" title="Voice search">🎙</button>
+  <button class="icon-btn" id="menuBtn" title="Menu">⋮</button>
+</header>
 
-  <!-- FIREBASE MODULES (Fixed Syntax) -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+<main id="main">
+  <section id="homeView" class="view active">
+    <div id="pullIndicator" class="pull-indicator"><div class="spinner"></div></div>
+    <div id="feed" class="feed"></div>
+  </section>
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
-      authDomain: "studio-1376926805-1d7be.firebaseapp.com",
-      projectId: "studio-1376926805-1d7be"
-    };
+  <section id="playerView" class="view">
+    <div class="player-video" id="playerVideo"></div>
+    <div class="player-body">
+      <button class="outline back" id="backBtn">← Back</button>
+      <div id="playerTitle" class="player-title"></div>
+      <div id="playerMeta" class="player-meta"></div>
+      <div class="channel-row">
+        <img id="playerAvatar" class="avatar" alt="">
+        <div><div id="playerChannel" class="channel-name"></div><div id="playerSubs" class="channel-sub"></div></div>
+        <button class="subscribe" id="subscribeBtn">Subscribe</button>
+      </div>
+      <div class="actions">
+        <button class="action-btn" data-action="like">👍 Like</button>
+        <button class="action-btn" data-action="share">↗ Share</button>
+        <button class="action-btn" data-action="download">⇩ Download</button>
+        <button class="action-btn" data-action="save">🔖 Save</button>
+      </div>
+    </div>
+  </section>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+  <section id="reelsView" class="view"></section>
 
-    window.FirebaseBridge = { auth, provider, signInWithPopup, signOut, onAuthStateChanged };
+  <section id="createView" class="view">
+    <div class="create-box">
+      <h2>＋ Create</h2>
+      <p style="color:#aaa">Select a local video to preview it as a Tanmay Gram reel.</p>
+      <div class="drop">
+        <div>🎬 Choose an MP4 video</div>
+        <input id="localVideo" type="file" accept="video/mp4,video/webm,video/*">
+      </div>
+      <video id="localPreview" controls playsinline style="display:none;width:100%;margin-top:15px;border-radius:12px;max-height:55dvh"></video>
+    </div>
+  </section>
 
-    // Auto-check Login State
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        document.getElementById('profName').innerText = user.displayName;
-        document.getElementById('profEmail').innerText = user.email;
-        document.getElementById('profPic').src = user.photoURL;
-        document.getElementById('loginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-      } else {
-        document.getElementById('profName').innerText = "Guest User";
-        document.getElementById('profEmail').innerText = "Not logged in";
-        document.getElementById('profPic').src = "https://ui-avatars.com/api/?name=Guest&background=333&color=fff";
-        document.getElementById('loginBtn').style.display = 'block';
-        document.getElementById('logoutBtn').style.display = 'none';
+  <section id="youView" class="view">
+    <div class="profile">
+      <img id="profileAvatar" class="profile-avatar" alt="Profile">
+      <div id="profileName" class="profile-name">Guest User</div>
+      <div id="profileEmail" class="profile-email"></div>
+      <div id="profileBio" class="bio">Tanmay 3.0
+Jhurre Colony 📍
+Video Creator 🎥
+Next Gen Developer 💻
+
+Log in to sync your account data.</div>
+      <div class="profile-actions">
+        <button class="outline" id="editProfile">Edit Profile</button>
+        <button class="outline primary" id="loginBtn">Login with Google</button>
+      </div>
+      <div class="grid" id="profileGrid"></div>
+    </div>
+  </section>
+</main>
+
+<nav id="bottomNav">
+  <button class="nav-btn active" data-view="homeView">⌂<span>Home</span></button>
+  <button class="nav-btn" data-view="reelsView">▶<span>Reels</span></button>
+  <button class="nav-btn create-btn" data-view="createView" title="Create">＋</button>
+  <button class="nav-btn" data-view="youView">◉<span>You</span></button>
+</nav>
+
+<button id="aiFab" title="Tanmays Intelligence">✦</button>
+
+<div id="chatSheet">
+  <div class="chat-head"><div class="chat-title">Tanmays <b>Intelligence</b></div><button class="icon-btn" id="closeChat">×</button></div>
+  <div id="chatMessages"><div class="msg ai">Hi! I'm Tanmays Intelligence. Ask me anything.</div></div>
+  <form id="chatForm" class="chat-form"><input id="chatInput" placeholder="Ask Tanmays AI..." autocomplete="off"><button id="chatSend">➤</button></form>
+</div>
+
+<div id="drawerOverlay">
+  <aside id="drawer">
+    <div class="drawer-title">Settings</div>
+    <button class="drawer-btn">👤 Account Center</button>
+    <button class="drawer-btn">🔖 Saved Items</button>
+    <button class="drawer-btn">◷ Watch History</button>
+    <button class="drawer-btn">🔔 Notifications</button>
+    <button class="drawer-btn">🔒 Privacy Settings</button>
+    <button class="drawer-btn" id="darkToggle">◐ Dark Mode <span style="margin-left:auto">ON</span></button>
+    <button class="drawer-btn">❔ Help</button>
+    <button class="drawer-btn logout" id="logoutBtn">↪ Log out</button>
+  </aside>
+</div>
+<div class="toast" id="toast"></div>
+<div class="install-banner" id="installBanner">
+  <div class="txt"><b>Install TANMAYS TUBE</b><br>Use it like a mobile app.</div>
+  <button id="installBtn">Install</button>
+  <button id="dismissInstall" class="icon-btn">×</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script>
+/* ============================================================
+   TANMAYS TUBE — single-file SPA
+   IMPORTANT: Browser-side API keys are visible to users.
+   For production, proxy YouTube/Gemini requests through your server.
+   ============================================================ */
+
+const CONFIG = {
+  firebase: {
+    apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
+    authDomain: "studio-1376926805-1d7be.firebaseapp.com",
+    projectId: "studio-1376926805-1d7be",
+    storageBucket: "studio-1376926805-1d7be.firebasestorage.app",
+    messagingSenderId: "467327670494",
+    appId: "1:467327670494:web:79dd0bfe3104aff22f8a4f"
+  },
+  youtubeKey: "AIzaSyBmBxgSoangpIJOuisVqRNrMj1nP5UFiWQ",
+  geminiKey: "AQ.Ab8RN6LQ-JCPDbo96b749XRuedHg2mUycAlKeXxxY5bSrN0mCA"
+};
+
+const FALLBACK_VIDEOS = [
+ {id:"dQw4w9WgXcQ",title:"Creative Tech & Coding — Start Building Today",channel:"Tanmays Studio",views:"1.2M views",duration:"10:45"},
+ {id:"M7lc1UVf-VE",title:"Build Something Amazing With Modern Web Technology",channel:"Tanmays Studio",views:"842K views",duration:"12:18"},
+ {id:"ysz5S6PUM-U",title:"JavaScript Projects That Make You Better at Coding",channel:"Code Daily",views:"510K views",duration:"8:42"},
+ {id:"ScMzIvxBSi4",title:"The Ultimate Developer Setup & Workflow",channel:"Next Gen Dev",views:"398K views",duration:"15:02"},
+ {id:"aqz-KE-bpKQ",title:"Learn Web Development From Zero",channel:"Dev Academy",views:"2.1M views",duration:"21:36"},
+ {id:"jNQXAC9IVRw",title:"How Great Apps Are Designed",channel:"Design Lab",views:"723K views",duration:"11:20"},
+ {id:"LXb3EKWsInQ",title:"Technology That Changed The Internet",channel:"Future Tech",views:"1.8M views",duration:"18:55"},
+ {id:"kJQP7kiw5Fk",title:"Build, Test, Launch — A Practical Creator Guide",channel:"Creator Hub",views:"611K views",duration:"9:14"},
+ {id:"9bZkp7q19f0",title:"Creative Coding Ideas For Your Next Project",channel:"Code Daily",views:"935K views",duration:"13:27"},
+ {id:"Zi_XLOBDo_Y",title:"From Idea To Real Working App",channel:"Next Gen Dev",views:"276K views",duration:"16:08"}
+];
+
+const REELS = [
+ {src:"https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",user:"tanmay.official",caption:"Build. Create. Repeat. 🚀",audio:"Original audio • Tanmay",likes:"12.4K",comments:"482"},
+ {src:"https://www.w3schools.com/html/mov_bbb.mp4",user:"tanmay.dev",caption:"A new project starts with one small idea 💻",audio:"Original audio • Tanmay",likes:"8.7K",comments:"221"},
+ {src:"https://media.w3.org/2010/05/sintel/trailer.mp4",user:"tanmay.gram",caption:"Your next-gen creator journey starts here ✨",audio:"Trending audio • Tanmay",likes:"19.1K",comments:"634"},
+ {src:"https://media.w3.org/2010/05/bunny/trailer.mp4",user:"tanmay.creator",caption:"Make something people remember. 🎥",audio:"Original audio • Tanmay",likes:"6.2K",comments:"174"}
+];
+
+const state = {
+  videos: [...FALLBACK_VIDEOS],
+  currentView: localStorage.getItem("tt_view") || "homeView",
+  lastVideo: null,
+  liked: JSON.parse(localStorage.getItem("tt_liked") || "{}"),
+  saved: JSON.parse(localStorage.getItem("tt_saved") || "{}"),
+  ytReady: false,
+  authReady: false
+};
+
+const $ = id => document.getElementById(id);
+const toast = msg => {
+  $("toast").textContent = msg; $("toast").classList.add("show");
+  clearTimeout(window.__toast); window.__toast = setTimeout(()=> $("toast").classList.remove("show"),2200);
+};
+const avatar = name => `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=111111&color=00f2fe&bold=true`;
+
+function showView(id){
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  const target=$(id); if(!target) return;
+  target.classList.add("active");
+  document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.view===id));
+  state.currentView=id; localStorage.setItem("tt_view",id);
+  if(id==="reelsView") startVisibleReel();
+  if(id!=="playerView") stopPlayer();
+}
+
+function renderFeed(list=state.videos){
+  const feed=$("feed");
+  if(!list.length){feed.innerHTML='<div class="empty">No videos found. Try another search.</div>';return}
+  feed.innerHTML=list.map((v,i)=>`
+    <article class="card" data-id="${v.id}" tabindex="0">
+      <div class="thumb-wrap">
+        <img loading="${i<3?"eager":"lazy"}" src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="">
+        <span class="duration">${v.duration||"--:--"}</span>
+      </div>
+      <div class="card-info">
+        <img class="avatar" src="${avatar(v.channel||"Creator")}" alt="">
+        <div style="min-width:0">
+          <div class="card-title">${escapeHtml(v.title)}</div>
+          <div class="meta">${escapeHtml(v.channel||"Creator")} • ${escapeHtml(v.views||"")}</div>
+        </div>
+      </div>
+    </article>`).join("");
+  feed.querySelectorAll(".card").forEach(c=>{
+    c.addEventListener("click",()=>openPlayer(c.dataset.id));
+    c.addEventListener("keydown",e=>{if(e.key==="Enter")openPlayer(c.dataset.id)});
+  });
+}
+function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+async function searchYouTube(q){
+  const clean=q.trim(); if(!clean)return;
+  if(/tanmay\s*gram|instagram/i.test(clean)){
+    showView("reelsView"); toast("Tanmay Gram mode");
+    return;
+  }
+  showView("homeView");
+  $("feed").innerHTML='<div class="empty"><div class="spinner" style="margin:auto"></div><p>Searching...</p></div>';
+  try{
+    const url=`https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=20&q=${encodeURIComponent(clean)}&key=${CONFIG.youtubeKey}`;
+    const r=await fetch(url); const data=await r.json();
+    if(!r.ok) throw new Error(data.error?.message||"YouTube API error");
+    const ids=(data.items||[]).map(x=>x.id.videoId).filter(Boolean);
+    let details=[];
+    if(ids.length){
+      const d=await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${ids.join(",")}&key=${CONFIG.youtubeKey}`);
+      const dd=await d.json();
+      details=(dd.items||[]).map(x=>({
+        id:x.id,title:x.snippet.title,channel:x.snippet.channelTitle,
+        views:x.statistics?.viewCount?formatViews(x.statistics.viewCount):"",
+        duration:isoDuration(x.contentDetails?.duration)
+      }));
+    }
+    state.videos=details.length?details:FALLBACK_VIDEOS.map(v=>({...v}));
+    renderFeed(state.videos);
+  }catch(err){
+    console.warn(err);
+    state.videos=[...FALLBACK_VIDEOS].sort(()=>Math.random()-.5);
+    renderFeed(state.videos);
+    toast("Search API unavailable — showing local feed");
+  }
+}
+function formatViews(n){
+  n=Number(n); if(n>=1e9)return (n/1e9).toFixed(1)+"B views";
+  if(n>=1e6)return (n/1e6).toFixed(1)+"M views";
+  if(n>=1e3)return (n/1e3).toFixed(1)+"K views";
+  return n+" views";
+}
+function isoDuration(x){
+  if(!x)return "--:--"; const m=x.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/); if(!m)return "--:--";
+  const h=+(m[1]||0), min=+(m[2]||0), sec=+(m[3]||0);
+  return h?`${h}:${String(min).padStart(2,"0")}:${String(sec).padStart(2,"0")}`:`${min}:${String(sec).padStart(2,"0")}`;
+}
+
+function openPlayer(id){
+  const v=state.videos.find(x=>x.id===id)||FALLBACK_VIDEOS.find(x=>x.id===id);
+  if(!v)return;
+  state.lastVideo=v;
+  $("playerVideo").innerHTML=`<iframe allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen src="https://www.youtube.com/embed/${encodeURIComponent(v.id)}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3"></iframe>`;
+  $("playerTitle").textContent=v.title;
+  $("playerMeta").textContent=`${v.views||"Video"} • ${v.duration||""}`;
+  $("playerChannel").textContent=v.channel||"Creator";
+  $("playerSubs").textContent="Creator channel";
+  $("playerAvatar").src=avatar(v.channel||"Creator");
+  document.querySelectorAll(".action-btn").forEach(b=>b.classList.toggle("active",b.dataset.action==="like"&&!!state.liked[v.id]));
+  showView("playerView");
+  $("playerView").scrollTop=0;
+}
+function stopPlayer(){ if(state.currentView!=="playerView") $("playerVideo").innerHTML=""; }
+
+function renderReels(){
+  $("reelsView").innerHTML=REELS.map((r,i)=>`
+    <article class="reel" data-index="${i}">
+      <video playsinline loop muted preload="${i===0?"auto":"metadata"}" src="${r.src}"></video>
+      <div class="reel-left">
+        <div class="reel-user"><img src="${avatar(r.user)}"><b>@${escapeHtml(r.user)}</b><button class="follow">Follow</button></div>
+        <div class="caption">${escapeHtml(r.caption)}</div>
+        <div class="audio">♫ ${escapeHtml(r.audio)}</div>
+      </div>
+      <div class="reel-actions">
+        <button class="reel-act like-reel">♡<small>${r.likes}</small></button>
+        <button class="reel-act">💬<small>${r.comments}</small></button>
+        <button class="reel-act" onclick="shareText('${encodeURIComponent(r.caption)}')">↗<small>Share</small></button>
+        <button class="reel-act">⋮<small>More</small></button>
+      </div>
+    </article>`).join("");
+  $("reelsView").querySelectorAll(".like-reel").forEach(b=>b.addEventListener("click",()=>{
+    b.classList.toggle("liked"); b.textContent=b.classList.contains("liked")?"♥":"♡"; b.innerHTML+=`<small>Liked</small>`;
+  }));
+  $("reelsView").querySelectorAll(".follow").forEach(b=>b.addEventListener("click",()=>{b.textContent=b.textContent==="Follow"?"Following":"Follow"}));
+}
+function startVisibleReel(){
+  const videos=[...$("reelsView").querySelectorAll("video")];
+  if(!videos.length)return;
+  videos.forEach(v=>{try{v.pause();}catch(e){}});
+  const rect=$("reelsView").getBoundingClientRect();
+  let best=videos[0],bestRatio=0;
+  videos.forEach(v=>{const r=v.parentElement.getBoundingClientRect();const visible=Math.max(0,Math.min(r.bottom,rect.bottom)-Math.max(r.top,rect.top));const ratio=visible/Math.max(1,r.height);if(ratio>bestRatio){bestRatio=ratio;best=v}});
+  if(bestRatio>.55)best.play().catch(()=>{});
+}
+function setupReelObserver(){
+  const root=$("reelsView");
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{
+    const v=e.target.querySelector("video");
+    if(e.isIntersecting&&e.intersectionRatio>=.6)v.play().catch(()=>{});
+    else v.pause();
+  }),{root,threshold:[.6]});
+  root.querySelectorAll(".reel").forEach(r=>obs.observe(r));
+}
+
+async function askGemini(text){
+  const msg=$("chatMessages");
+  const user=document.createElement("div");user.className="msg user";user.textContent=text;msg.appendChild(user);
+  const typing=document.createElement("div");typing.className="msg ai";typing.id="typing";typing.innerHTML='<span class="typing">Typing <i class="dot"></i><i class="dot"></i><i class="dot"></i></span>';msg.appendChild(typing);msg.scrollTop=msg.scrollHeight;
+  try{
+    const endpoint=`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${CONFIG.geminiKey}`;
+    const r=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({contents:[{parts:[{text:`You are Tanmays Intelligence, a helpful assistant inside TANMAYS TUBE. Answer clearly and concisely.\n\nUser: ${text}`}]}]})});
+    const data=await r.json(); if(!r.ok)throw new Error(data.error?.message||"Gemini error");
+    const answer=data.candidates?.[0]?.content?.parts?.map(p=>p.text||"").join("")||"I couldn't generate a response.";
+    typing.remove();const ai=document.createElement("div");ai.className="msg ai";ai.textContent=answer;msg.appendChild(ai);
+  }catch(e){
+    console.warn(e);typing.remove();const er=document.createElement("div");er.className="msg error";er.textContent="API Error: Check API Key or Network.";msg.appendChild(er);
+  }
+  msg.scrollTop=msg.scrollHeight;
+}
+
+function setupFirebase(){
+  try{
+    if(!window.firebase)throw new Error("Firebase SDK unavailable");
+    firebase.initializeApp(CONFIG.firebase);
+    const auth=firebase.auth(); state.authReady=true;
+    auth.onAuthStateChanged(user=>{
+      if(user){
+        $("profileName").textContent=user.displayName||"User";
+        $("profileEmail").textContent=user.email||"";
+        $("profileAvatar").src=user.photoURL||avatar(user.displayName||"User");
+        $("profileBio").textContent=`Tanmay 3.0\nJhurre Colony 📍\nVideo Creator 🎥\nNext Gen Developer 💻\n\nAccount synced with Google.`;
+        $("loginBtn").textContent="Logged in";
+      }else{
+        $("profileName").textContent="Guest User";$("profileEmail").textContent="";
+        $("profileAvatar").src=avatar("Guest User");
+        $("profileBio").textContent=`Tanmay 3.0\nJhurre Colony 📍\nVideo Creator 🎥\nNext Gen Developer 💻\n\nLog in to sync your account data.`;
+        $("loginBtn").textContent="Login with Google";
       }
     });
-  </script>
+    $("loginBtn").addEventListener("click",async()=>{
+      if(auth.currentUser){showView("youView");return}
+      try{await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider())}
+      catch(e){console.warn(e);toast("Google login failed. Check Firebase settings.");}
+    });
+    $("logoutBtn").addEventListener("click",async()=>{try{await auth.signOut();toast("Logged out")}catch(e){toast("Logout failed")}});
+  }catch(e){
+    console.warn("Firebase disabled:",e);
+    $("loginBtn").addEventListener("click",()=>toast("Firebase is not available. Run from a local/server URL."));
+    $("logoutBtn").addEventListener("click",()=>toast("No account is currently connected."));
+  }
+}
 
-  <header>
-    <div class="brand-logo" onclick="switchTab('tab-home')"><i class="fa-solid fa-play"></i> TANMAYS</div>
-    <div class="search-container">
-      <input type="text" id="searchInput" class="search-box" placeholder="Search Tube or Gram..." />
-      <button class="search-btn" onclick="executeSmartSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-    </div>
-  </header>
+function setupInstall(){
+  let deferred;
+  const banner=$("installBanner");
+  window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferred=e;banner.classList.add("show")});
+  $("installBtn").onclick=async()=>{
+    if(!deferred){toast("Install is available from your browser menu.");return}
+    deferred.prompt(); await deferred.userChoice; deferred=null; banner.classList.remove("show");
+  };
+  $("dismissInstall").onclick=()=>banner.classList.remove("show");
+  window.addEventListener("appinstalled",()=>{banner.classList.remove("show");toast("TANMAYS TUBE installed")});
+}
 
-  <main id="mainScroll">
-    <!-- HOME FEED (YT) -->
-    <section id="tab-home" class="view-section active">
-      <div class="grid-feed" id="homeFeed"></div>
-    </section>
+async function shareText(encoded){
+  const text=decodeURIComponent(encoded);
+  try{if(navigator.share)await navigator.share({title:"TANMAYS TUBE",text});else{await navigator.clipboard.writeText(text);toast("Copied to clipboard")}}
+  catch(e){}
+}
 
-    <!-- PLAYER -->
-    <section id="tab-player" class="view-section">
-      <div class="player-video-container">
-        <iframe id="mainPlayer" src="" allow="autoplay; fullscreen"></iframe>
-      </div>
-      <div class="player-details">
-        <h1 class="player-title" id="pTitle">Title</h1>
-        <p class="player-views" id="pViews">Views</p>
-      </div>
-    </section>
+$("searchBtn").onclick=()=>searchYouTube($("search").value);
+$("search").addEventListener("keydown",e=>{if(e.key==="Enter")searchYouTube(e.target.value)});
+$("voiceBtn").onclick=()=>{
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast("Voice search is not supported here.");return}
+  const r=new SR();r.lang="en-IN";r.interimResults=false;r.onresult=e=>{$("search").value=e.results[0][0].transcript;searchYouTube($("search").value)};r.start();
+};
+$("menuBtn").onclick=()=>$("drawerOverlay").classList.add("open");
+$("drawerOverlay").onclick=e=>{if(e.target.id==="drawerOverlay")e.currentTarget.classList.remove("open")};
+$("bottomNav").querySelectorAll(".nav-btn").forEach(b=>b.onclick=()=>showView(b.dataset.view));
+$("backBtn").onclick=()=>showView("homeView");
+$("subscribeBtn").onclick=e=>{e.currentTarget.textContent=e.currentTarget.textContent==="Subscribe"?"Subscribed":"Subscribe";toast(e.currentTarget.textContent==="Subscribed"?"Subscribed":"Unsubscribed")};
+document.querySelectorAll(".action-btn").forEach(b=>b.addEventListener("click",async()=>{
+  const v=state.lastVideo;if(!v)return;
+  const a=b.dataset.action;
+  if(a==="like"){state.liked[v.id]=!state.liked[v.id];localStorage.setItem("tt_liked",JSON.stringify(state.liked));b.classList.toggle("active",state.liked[v.id]);}
+  if(a==="save"){state.saved[v.id]=!state.saved[v.id];localStorage.setItem("tt_saved",JSON.stringify(state.saved));b.classList.toggle("active",state.saved[v.id]);toast(state.saved[v.id]?"Saved":"Removed from saved")}
+  if(a==="share")shareText(encodeURIComponent(v.title));
+  if(a==="download")toast("Direct downloading is controlled by the video owner/platform.");
+}));
+$("aiFab").onclick=()=>$("chatSheet").classList.add("open");
+$("closeChat").onclick=()=>$("chatSheet").classList.remove("open");
+$("chatForm").onsubmit=e=>{e.preventDefault();const x=$("chatInput").value.trim();if(x){$("chatInput").value="";askGemini(x)}};
+$("localVideo").onchange=e=>{
+  const f=e.target.files[0];if(!f)return;
+  $("localPreview").src=URL.createObjectURL(f);$("localPreview").style.display="block";toast("Local video ready for preview");
+};
+$("editProfile").onclick=()=>toast("Profile editing can be connected to Firestore next.");
+$("darkToggle").onclick=()=>toast("TANMAYS TUBE is already in Dark Mode.");
 
-    <!-- REELS -->
-    <section id="tab-reels" class="view-section" style="padding: 0;">
-      <div class="reels-container" id="reelsFeed"></div>
-    </section>
+let touchStartY=0,touchPulling=false;
+$("homeView").addEventListener("touchstart",e=>{if($("homeView").scrollTop===0)touchStartY=e.touches[0].clientY;touchPulling=true},{passive:true});
+$("homeView").addEventListener("touchmove",e=>{
+  if(!touchPulling||$("homeView").scrollTop!==0)return;
+  const dy=e.touches[0].clientY-touchStartY;if(dy>0){$("pullIndicator").style.height=Math.min(70,dy*.35)+"px";}
+},{passive:true});
+$("homeView").addEventListener("touchend",()=>{
+  if(!touchPulling)return;touchPulling=false;
+  const h=parseFloat(getComputedStyle($("pullIndicator")).height)||0;
+  if(h>=45){$("pullIndicator").style.height="50px";setTimeout(()=>{state.videos=[...state.videos].sort(()=>Math.random()-.5);renderFeed();$("pullIndicator").style.height="0"},500)}
+  else $("pullIndicator").style.height="0";
+});
 
-    <!-- GOOGLE AUTH PROFILE -->
-    <section id="tab-profile" class="view-section">
-      <div class="profile-header">
-        <img src="https://ui-avatars.com/api/?name=Guest&background=333&color=fff" class="prof-pic" id="profPic">
-        <div class="prof-name" id="profName">Guest User</div>
-        <div class="prof-email" id="profEmail">Not logged in</div>
-        <button class="btn-login" id="loginBtn" onclick="handleLogin()">Login with Google</button>
-        <button class="btn-logout" id="logoutBtn" onclick="handleLogout()">Logout</button>
-      </div>
-    </section>
-  </main>
+function makeProfileGrid(){
+  $("profileGrid").innerHTML=Array.from({length:9},(_,i)=>`<img loading="lazy" src="https://picsum.photos/seed/tanmays${i+1}/500/500" alt="Post ${i+1}">`).join("");
+}
 
-  <div class="ai-fab" onclick="toggleAI()"><i class="fa-solid fa-sparkles"></i></div>
-  <div class="ai-chat-window" id="aiWindow">
-    <div class="ai-header">
-      ✨ Tanmays Intelligence
-      <i class="fa-solid fa-chevron-down" onclick="toggleAI()" style="cursor:pointer;"></i>
-    </div>
-    <div class="ai-body" id="aiResponse">
-      <div class="msg msg-ai">System is online. Note: If you get a 401 error, your Gemini API Key is invalid.</div>
-    </div>
-    <div class="ai-footer">
-      <input type="text" id="aiInput" placeholder="Message...">
-      <button onclick="askGemini()"><i class="fa-solid fa-paper-plane"></i></button>
-    </div>
-  </div>
-
-  <nav class="bottom-bar">
-    <button class="nav-tab active" onclick="switchTab('tab-home', this)"><i class="fa-solid fa-house"></i><span>Home</span></button>
-    <button class="nav-tab" onclick="switchTab('tab-reels', this)"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></button>
-    <button class="nav-tab" onclick="switchTab('tab-profile', this)"><i class="fa-regular fa-circle-user"></i><span>You</span></button>
-  </nav>
-
-  <script>
-    const YT_API = "AIzaSyBmBxgSoangpIJOuisVqRNrMj1nP5UFiWQ";
-    const GEMINI_API = "AQ.Ab8RN6LQ-JCPDbo96b749XRuedHg2mUycAlKeXxxY5bSrN0mCA";
-    
-    const mockVideos = [
-      { id: "jfKfPfyJRdk", title: "Lofi Beats to Relax", creator: "Lofi Girl", views: "2.4M", thumb: "https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
-      { id: "kJQP7kiw5Fk", title: "Cyberpunk Night Drive", creator: "Neon Vibes", views: "850K", thumb: "https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
-      { id: "3JZ_D3ELwOQ", title: "Web Dev 2026", creator: "Tanmay Studio", views: "1.1M", thumb: "https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg" },
-      { id: "t0Q2otsqC4I", title: "Tom & Jerry Classics", creator: "WB Kids", views: "10M", thumb: "https://i.ytimg.com/vi/t0Q2otsqC4I/hqdefault.jpg" }
-    ];
-
-    const nativeInstaReels = [
-      { url: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4", author: "neon_girl" },
-      { url: "https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-4017-large.mp4", author: "dev_tanmay" }
-    ];
-
-    window.onload = () => {
-      loadHomeFeed(mockVideos);
-      loadInstaReels();
-    };
-
-    // ================= TABS =================
-    function switchTab(targetId, btn) {
-      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-      document.getElementById(targetId).classList.add('active');
-      if(btn) btn.classList.add('active');
-      if(targetId !== 'tab-player') document.getElementById('mainPlayer').src = "";
-    }
-
-    // ================= HOME & SEARCH =================
-    function loadHomeFeed(data) {
-      document.getElementById("homeFeed").innerHTML = data.map(v => `
-        <div class="media-card" onclick="openPlayer('${v.id}', '${v.title.replace(/'/g, "")}', '${v.creator}', '${v.views}')">
-          <div class="thumbnail-box"><img src="${v.thumb}"></div>
-          <div class="media-info">
-            <img src="https://ui-avatars.com/api/?name=${v.creator}&background=random" class="channel-pic">
-            <div class="media-text">
-              <div class="media-title">${v.title}</div>
-              <div class="media-meta">${v.creator} • ${v.views}</div>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function openPlayer(id, title, creator, views) {
-      document.getElementById('pTitle').innerText = title;
-      document.getElementById('pViews').innerText = `${creator} • ${views} views`;
-      switchTab('tab-player');
-      document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`;
-    }
-
-    async function executeSmartSearch() {
-      let query = document.getElementById('searchInput').value.trim();
-      if(!query) return;
-
-      if(query.toLowerCase().includes('gram') || query.toLowerCase().includes('instagram')) {
-        switchTab('tab-reels', document.querySelectorAll('.nav-tab')[1]);
-        return;
-      }
-
-      switchTab('tab-home', document.querySelectorAll('.nav-tab')[0]);
-      try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YT_API}`);
-        const data = await res.json();
-        if(data.items) {
-          const mapped = data.items.map(i => ({
-            id: i.id.videoId, title: i.snippet.title, creator: i.snippet.channelTitle, views: "New", thumb: i.snippet.thumbnails.high.url
-          }));
-          loadHomeFeed(mapped);
-        }
-      } catch(e) { loadHomeFeed(mockVideos); }
-    }
-
-    // ================= REELS =================
-    function loadInstaReels() {
-      document.getElementById("reelsFeed").innerHTML = [...nativeInstaReels, ...nativeInstaReels].map(r => `
-        <div class="reel-card">
-          <video src="${r.url}" loop playsinline></video>
-          <div class="reel-ui-wrapper">
-            <div class="r-user"><img src="https://ui-avatars.com/api/?name=${r.author}"><strong>${r.author}</strong></div>
-            <div class="reel-right-actions">
-              <i class="fa-solid fa-heart" onclick="this.style.color='#ff3040'"></i>
-              <i class="fa-solid fa-ellipsis-vertical"></i>
-            </div>
-          </div>
-        </div>
-      `).join('');
-
-      const videos = document.querySelectorAll('#reelsFeed video');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting) entry.target.play();
-          else entry.target.pause();
-        });
-      }, { threshold: 0.6 });
-      videos.forEach(v => observer.observe(v));
-    }
-
-    // ================= AUTHENTICATION =================
-    async function handleLogin() {
-      if(!window.FirebaseBridge) return alert("Firebase is loading. Ensure you are running via Live Server (Port 5500).");
-      const { auth, provider, signInWithPopup } = window.FirebaseBridge;
-      try { await signInWithPopup(auth, provider); } catch(err) { alert(err.message); }
-    }
-
-    async function handleLogout() {
-      if(window.FirebaseBridge) {
-        await window.FirebaseBridge.signOut(window.FirebaseBridge.auth);
-      }
-    }
-
-    // ================= AI ENGINE (Safe DOM) =================
-    function toggleAI() { document.getElementById('aiWindow').classList.toggle('open'); }
-    
-    async function askGemini() {
-      const input = document.getElementById('aiInput');
-      const box = document.getElementById('aiResponse');
-      if(!input.value.trim()) return;
-      
-      const q = input.value;
-      input.value = "";
-      box.innerHTML += `<div class="msg msg-user">${q}</div>`;
-      
-      // Creating a safe loading element ID
-      const loadId = 'load-' + Date.now();
-      box.innerHTML += `<div class="msg msg-ai" id="${loadId}"><i class="fa-solid fa-circle-notch fa-spin"></i> Typing...</div>`;
-      box.scrollTop = box.scrollHeight;
-      
-      try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`, {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contents: [{ parts: [{ text: q }] }] })
-        });
-        const data = await res.json();
-        
-        const loader = document.getElementById(loadId);
-        if(loader) loader.remove();
-        
-        if (data.error) throw new Error(data.error.message);
-        
-        const reply = data.candidates[0].content.parts[0].text;
-        box.innerHTML += `<div class="msg msg-ai">${reply.replace(/\n/g, '<br>')}</div>`;
-      } catch(e) {
-        const loader = document.getElementById(loadId);
-        if(loader) loader.remove();
-        box.innerHTML += `<div class="msg msg-ai" style="color: #ff5555;">API Error: Check API Key or Network.</div>`;
-      }
-      box.scrollTop = box.scrollHeight;
-    }
-  </script>
+renderFeed(state.videos);
+renderReels();setupReelObserver();makeProfileGrid();setupFirebase();setupInstall();
+showView(state.currentView);
+</script>
 </body>
 </html>
