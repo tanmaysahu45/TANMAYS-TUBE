@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -8,332 +8,181 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet" />
 
-  <!-- Firebase -->
+  <!-- Firebase (Safe Load) -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-firestore.js";
+    try {
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+      import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+      
+      const firebaseConfig = {
+        apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
+        authDomain: "studio-1376926805-1d7be.firebaseapp.com",
+        projectId: "studio-1376926805-1d7be",
+        storageBucket: "studio-1376926805-1d7be.firebasestorage.app",
+        messagingSenderId: "467327670494",
+        appId: "1:467327670494:web:79dd0bfe3104aff22f8a4f"
+      };
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
-      authDomain: "studio-1376926805-1d7be.firebaseapp.com",
-      projectId: "studio-1376926805-1d7be",
-      storageBucket: "studio-1376926805-1d7be.firebasestorage.app",
-      messagingSenderId: "467327670494",
-      appId: "1:467327670494:web:79dd0bfe3104aff22f8a4f"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
-
-    window.FirebaseBridge = { auth, db, provider, signInWithPopup, signOut, onAuthStateChanged, doc, setDoc, getDoc, updateDoc, arrayUnion };
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+      window.FirebaseBridge = { auth, provider, signInWithPopup };
+    } catch (e) {
+      console.log("Firebase load delayed, app will still run.");
+    }
   </script>
 
   <style>
     :root {
-      --bg-dark: #000000;
-      --surface-dark: #121212;
-      --card-bg: #1a1a1a;
+      --bg-dark: #0f0f0f;
+      --surface-dark: #212121;
       --accent-cyan: #00f2fe;
-      --accent-blue: #4facfe;
       --text-main: #ffffff;
       --text-sub: #aaaaaa;
-      --border-color: rgba(255, 255, 255, 0.1);
-      --glass-bg: rgba(18, 18, 18, 0.95);
-      --bottom-nav-height: 60px;
       --header-height: 60px;
+      --bottom-nav-height: 60px;
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
     
-    body {
-      background-color: var(--bg-dark);
-      color: var(--text-main);
-      height: 100dvh;
-      width: 100vw;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
+    body { background-color: var(--bg-dark); color: var(--text-main); height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
     /* HEADER */
-    header {
-      height: var(--header-height);
-      background: var(--bg-dark);
-      border-bottom: 1px solid var(--border-color);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 15px;
-      z-index: 100;
-    }
+    header { height: var(--header-height); background: var(--bg-dark); display: flex; align-items: center; padding: 0 12px; gap: 10px; z-index: 100; border-bottom: 1px solid #333; }
+    .brand-logo { font-family: 'Orbitron', sans-serif; font-size: 1.1rem; font-weight: 900; color: var(--accent-cyan); display: none; }
+    @media(min-width: 400px) { .brand-logo { display: block; } }
 
-    .brand-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .search-container {
-      flex: 1;
-      margin: 0 15px;
-      position: relative;
-    }
-
-    .search-box {
-      width: 100%;
-      background: var(--surface-dark);
-      border: 1px solid var(--border-color);
-      border-radius: 20px;
-      padding: 8px 35px 8px 15px;
-      color: white;
-      font-size: 0.9rem;
-      outline: none;
-    }
-
-    .search-btn {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 1rem;
-    }
-
-    .header-icons { display: flex; gap: 15px; }
+    /* BIG SEARCH BAR + MIC */
+    .search-container { flex: 1; display: flex; align-items: center; background: var(--surface-dark); border-radius: 25px; padding: 5px 15px; border: 1px solid #333; }
+    .search-box { flex: 1; background: transparent; border: none; color: white; padding: 8px 5px; font-size: 0.95rem; outline: none; }
+    .search-btn, .mic-btn { background: none; border: none; color: var(--text-main); font-size: 1.1rem; padding: 5px; cursor: pointer; }
+    .mic-btn { margin-left: 8px; border-left: 1px solid #444; padding-left: 12px; }
+    
+    .header-icons { display: flex; gap: 12px; }
     .icon-btn { background: none; border: none; color: white; font-size: 1.3rem; cursor: pointer; }
 
-    /* MAIN CONTAINER */
-    main {
-      flex: 1;
-      height: calc(100dvh - var(--header-height) - var(--bottom-nav-height));
-      overflow-y: auto;
-      position: relative;
-    }
-
+    /* MAIN VIEWS */
+    main { flex: 1; height: calc(100dvh - var(--header-height) - var(--bottom-nav-height)); overflow-y: auto; position: relative; }
     .view-section { display: none; height: 100%; overflow-y: auto; }
     .view-section.active { display: block; }
 
     /* HOME FEED */
-    .grid-feed { padding: 15px; display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
-    .media-card { background: var(--surface-dark); border-radius: 12px; overflow: hidden; }
-    .thumbnail-box { width: 100%; aspect-ratio: 16/9; background: #222; position: relative; }
+    .grid-feed { padding: 10px; display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, minmax(100%, 1fr)); }
+    @media(min-width: 600px) { .grid-feed { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+    
+    .media-card { cursor: pointer; }
+    .thumbnail-box { width: 100%; aspect-ratio: 16/9; background: #222; border-radius: 12px; overflow: hidden; position: relative; }
     .thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
-    .media-details { padding: 12px; }
-    .media-title { font-size: 0.95rem; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 5px; }
-    .media-meta { font-size: 0.8rem; color: var(--text-sub); display: flex; justify-content: space-between; }
+    .media-details { padding: 10px 5px; display: flex; gap: 12px; }
+    .channel-pic { width: 40px; height: 40px; border-radius: 50%; background: #444; }
+    .media-info { flex: 1; }
+    .media-title { font-size: 0.95rem; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
+    .media-meta { font-size: 0.8rem; color: var(--text-sub); }
 
-    /* REELS FEED (INSTAGRAM STYLE NATIVE) */
-    .reels-container {
-      height: 100%;
-      scroll-snap-type: y mandatory;
-      overflow-y: scroll;
-      scroll-behavior: smooth;
-    }
-    .reel-card {
-      height: 100%;
-      width: 100%;
-      scroll-snap-align: start;
-      position: relative;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    .reel-video { width: 100%; height: 100%; object-fit: cover; }
+    /* YOUTUBE STYLE PLAYER PAGE */
+    #tab-player { background: var(--bg-dark); z-index: 50; position: absolute; top: 0; left: 0; width: 100%; }
+    .player-video-container { width: 100%; aspect-ratio: 16/9; background: #000; position: sticky; top: 0; z-index: 10; }
+    .player-video-container iframe { width: 100%; height: 100%; border: none; }
+    .player-details { padding: 15px; }
+    .player-title { font-size: 1.2rem; font-weight: 600; margin-bottom: 5px; }
+    .player-views { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px; }
     
-    .reel-ui {
-      position: absolute;
-      bottom: 20px;
-      left: 15px;
-      right: 60px;
-      z-index: 10;
-    }
-    .reel-author { font-weight: 600; font-size: 1rem; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;}
-    .reel-desc { font-size: 0.9rem; }
+    .player-channel-bar { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #333; border-bottom: 1px solid #333; padding: 10px 0; margin-bottom: 15px; }
+    .channel-left { display: flex; align-items: center; gap: 10px; }
+    .channel-name { font-weight: 600; font-size: 1rem; }
+    .subscribe-btn { background: var(--text-main); color: var(--bg-dark); border: none; padding: 8px 16px; border-radius: 20px; font-weight: 600; cursor: pointer; }
     
-    .reel-actions {
-      position: absolute;
-      right: 15px;
-      bottom: 30px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      z-index: 10;
-    }
-    .action-icon {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: white;
-      font-size: 1.8rem;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-    }
-    .action-icon span { font-size: 0.8rem; margin-top: 5px; }
-    .heart-active { color: #ff3040; }
+    .player-actions { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
+    .action-pill { background: var(--surface-dark); border: none; color: white; padding: 8px 15px; border-radius: 20px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
 
-    /* PROFILE VIEW */
-    .profile-wrap { padding: 20px; }
-    .profile-header { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; }
-    .profile-pic { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--accent-cyan); object-fit: cover; }
-    .profile-stats { display: flex; gap: 20px; font-size: 0.9rem; margin-top: 5px;}
-    .profile-stats span { display: flex; flex-direction: column; align-items: center; }
-    .profile-stats strong { font-size: 1.1rem; }
-
+    /* REELS */
+    .reels-container { height: 100%; scroll-snap-type: y mandatory; overflow-y: scroll; background: #000; }
+    .reel-card { height: 100%; width: 100%; scroll-snap-align: start; position: relative; display: flex; justify-content: center; align-items: center; }
+    .reel-card iframe { width: 100%; height: 100%; border: none; pointer-events: none; }
+    
     /* BOTTOM NAV */
-    .bottom-bar {
-      height: var(--bottom-nav-height);
-      background: var(--bg-dark);
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      z-index: 100;
-    }
-    .nav-tab {
-      background: none; border: none; color: var(--text-sub);
-      display: flex; flex-direction: column; align-items: center;
-      font-size: 0.7rem; gap: 4px; cursor: pointer; transition: 0.2s;
-    }
-    .nav-tab i { font-size: 1.3rem; }
+    .bottom-bar { height: var(--bottom-nav-height); background: var(--bg-dark); border-top: 1px solid #333; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; z-index: 100; }
+    .nav-tab { background: none; border: none; color: var(--text-sub); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; cursor: pointer; }
+    .nav-tab i { font-size: 1.4rem; }
     .nav-tab.active { color: var(--text-main); }
-    
-    .create-btn i { font-size: 1.8rem; color: var(--text-main); }
+    .create-btn i { font-size: 2rem; }
 
-    /* AI FLOATING BUTTON & CHAT */
-    .ai-fab {
-      position: fixed;
-      bottom: 80px;
-      right: 15px;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent-cyan), var(--accent-blue));
-      color: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4);
-      z-index: 90;
-      cursor: pointer;
-    }
-
-    .ai-chat-window {
-      position: fixed;
-      bottom: -100%;
-      left: 0;
-      width: 100%;
-      height: 60dvh;
-      background: var(--surface-dark);
-      border-top-left-radius: 20px;
-      border-top-right-radius: 20px;
-      z-index: 150;
-      transition: 0.3s ease-in-out;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
-    }
+    /* AI CHAT FLOATING */
+    .ai-fab { position: fixed; bottom: 80px; right: 15px; width: 55px; height: 55px; border-radius: 50%; background: var(--accent-cyan); color: #000; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.4); z-index: 150; cursor: pointer; }
+    .ai-chat-window { position: fixed; bottom: -100%; left: 0; width: 100%; height: 70dvh; background: var(--surface-dark); border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 200; transition: 0.3s; display: flex; flex-direction: column; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); }
     .ai-chat-window.open { bottom: 0; }
-    
-    .ai-header { padding: 15px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;}
-    .ai-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; line-height: 1.5; }
-    .ai-footer { padding: 10px 15px; display: flex; gap: 10px; border-top: 1px solid var(--border-color); }
-    .ai-input { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; background: #2a2a2a; color: white; outline: none; }
-    .ai-send { background: none; border: none; color: var(--accent-cyan); font-size: 1.5rem; }
+    .ai-header { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+    .ai-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.95rem; line-height: 1.5; }
+    .ai-footer { padding: 10px 15px; display: flex; gap: 10px; background: var(--bg-dark); }
+    .ai-input { flex: 1; padding: 12px 15px; border-radius: 25px; border: none; background: #333; color: white; outline: none; }
+    .ai-send { background: none; border: none; color: var(--accent-cyan); font-size: 1.5rem; padding: 0 10px; }
 
-    /* SIDE DRAWER (SETTINGS) */
-    .side-drawer {
-      position: fixed; top: 0; right: -100%; width: 80%; max-width: 300px; height: 100dvh;
-      background: var(--surface-dark); z-index: 200; transition: 0.3s;
-      display: flex; flex-direction: column; border-left: 1px solid var(--border-color);
-    }
-    .side-drawer.open { right: 0; }
-    .drawer-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; font-size: 1.2rem;}
-    .drawer-list { list-style: none; overflow-y: auto; padding: 10px 0;}
-    .drawer-list li { padding: 15px 20px; display: flex; align-items: center; gap: 15px; font-size: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .drawer-list li i { font-size: 1.2rem; width: 25px; text-align: center; }
-
-    /* OVERLAY */
-    .overlay { position: fixed; top:0; left:0; width:100vw; height:100dvh; background: rgba(0,0,0,0.5); z-index: 140; display: none; }
-    .overlay.show { display: block; }
-    
-    /* VIDEO MODAL */
-    .video-modal { display: none; position: fixed; top:0; left:0; width: 100vw; height: 100dvh; background: #000; z-index: 300; }
-    .video-modal iframe { width: 100%; height: 100%; border: none; }
-    .close-video { position: absolute; top: 20px; right: 20px; font-size: 2rem; color: white; background: none; border: none; z-index: 301; }
   </style>
 </head>
 <body>
 
   <!-- HEADER -->
   <header>
-    <div class="brand-logo">TANMAYS TUBE</div>
+    <div class="brand-logo">TANMAYS</div>
     <div class="search-container">
-      <input type="text" id="searchInput" class="search-box" placeholder="Search..." />
+      <input type="text" id="searchInput" class="search-box" placeholder="Search YouTube..." />
       <button class="search-btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <button class="mic-btn" onclick="alert('Mic activated!')"><i class="fa-solid fa-microphone"></i></button>
     </div>
     <div class="header-icons">
-      <button class="icon-btn" onclick="handleAuth()"><i class="fa-regular fa-circle-user"></i></button>
       <button class="icon-btn" onclick="toggleMenu()"><i class="fa-solid fa-ellipsis-vertical"></i></button>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
   <main>
-    <!-- HOME TAB -->
+    <!-- HOME FEED -->
     <section id="tab-home" class="view-section active">
       <div class="grid-feed" id="homeFeed"></div>
     </section>
 
-    <!-- REELS TAB -->
+    <!-- YOUTUBE PLAYER PAGE -->
+    <section id="tab-player" class="view-section">
+      <div class="player-video-container">
+        <iframe id="mainPlayer" src="" allow="autoplay; fullscreen"></iframe>
+      </div>
+      <div class="player-details">
+        <h1 class="player-title" id="pTitle">Video Title</h1>
+        <p class="player-views" id="pViews">1.2M views • 2 days ago</p>
+        
+        <div class="player-actions">
+          <button class="action-pill"><i class="fa-regular fa-thumbs-up"></i> 124K</button>
+          <button class="action-pill"><i class="fa-solid fa-share"></i> Share</button>
+          <button class="action-pill"><i class="fa-solid fa-download"></i> Download</button>
+          <button class="action-pill"><i class="fa-regular fa-bookmark"></i> Save</button>
+        </div>
+
+        <div class="player-channel-bar">
+          <div class="channel-left">
+            <div class="channel-pic"></div>
+            <div>
+              <div class="channel-name" id="pChannel">Channel Name</div>
+              <div style="font-size: 0.8rem; color: var(--text-sub);">2.5M subscribers</div>
+            </div>
+          </div>
+          <button class="subscribe-btn">Subscribe</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- REELS FEED -->
     <section id="tab-reels" class="view-section">
       <div class="reels-container" id="reelsFeed"></div>
     </section>
-
-    <!-- PROFILE TAB -->
-    <section id="tab-profile" class="view-section">
-      <div class="profile-wrap">
-        <div class="profile-header">
-          <img src="https://ui-avatars.com/api/?name=User&background=random" id="profilePic" class="profile-pic">
-          <div>
-            <h2 id="profileName">Guest</h2>
-            <div class="profile-stats">
-              <span><strong>0</strong> Posts</span>
-              <span><strong>0</strong> Followers</span>
-              <span><strong id="savedCount">0</strong> Saved</span>
-            </div>
-          </div>
-        </div>
-        <hr style="border-color: var(--border-color); margin-bottom: 15px;">
-        <h3 style="margin-bottom: 15px;">Your Grid</h3>
-        <div class="grid-feed" id="profileGrid" style="padding: 0;"></div>
-      </div>
-    </section>
   </main>
 
-  <!-- AI FLOATING BUTTON -->
-  <div class="ai-fab" onclick="toggleAI()">
-    <i class="fa-solid fa-bolt"></i>
-  </div>
-
-  <!-- AI CHAT WINDOW -->
+  <!-- AI FAB & CHAT -->
+  <div class="ai-fab" onclick="toggleAI()"><i class="fa-solid fa-robot"></i></div>
   <div class="ai-chat-window" id="aiWindow">
     <div class="ai-header">
       <strong>✨ Tanmays Intelligence</strong>
-      <i class="fa-solid fa-xmark" onclick="toggleAI()" style="font-size: 1.5rem;"></i>
+      <i class="fa-solid fa-chevron-down" onclick="toggleAI()" style="font-size: 1.5rem;"></i>
     </div>
-    <div class="ai-body" id="aiResponse">Hi! I am your AI assistant. Ask me anything...</div>
+    <div class="ai-body" id="aiResponse">Hello Tanmay! Ask me anything...</div>
     <div class="ai-footer">
       <input type="text" id="aiInput" class="ai-input" placeholder="Type a message...">
       <button class="ai-send" onclick="askGemini()"><i class="fa-solid fa-paper-plane"></i></button>
@@ -342,182 +191,97 @@
 
   <!-- BOTTOM NAV -->
   <nav class="bottom-bar">
-    <button class="nav-tab active" data-target="tab-home" onclick="switchTab('tab-home', this)"><i class="fa-solid fa-house"></i>Home</button>
-    <button class="nav-tab" data-target="tab-reels" onclick="switchTab('tab-reels', this)"><i class="fa-solid fa-clapperboard"></i>Reels</button>
-    <button class="nav-tab create-btn" onclick="alert('Upload feature coming soon!')"><i class="fa-regular fa-square-plus"></i></button>
-    <button class="nav-tab" data-target="tab-profile" onclick="switchTab('tab-profile', this)"><i class="fa-regular fa-user"></i>Profile</button>
+    <button class="nav-tab active" onclick="switchTab('tab-home', this)"><i class="fa-solid fa-house"></i>Home</button>
+    <button class="nav-tab" onclick="switchTab('tab-reels', this)"><i class="fa-solid fa-clapperboard"></i>Reels</button>
+    <button class="nav-tab create-btn" onclick="alert('Upload Video')"><i class="fa-regular fa-square-plus"></i></button>
+    <button class="nav-tab" onclick="alert('Profile Loading...')"><i class="fa-regular fa-user"></i>Profile</button>
   </nav>
 
-  <!-- SIDE DRAWER (SETTINGS) -->
-  <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-  <aside class="side-drawer" id="settingsDrawer">
-    <div class="drawer-header">
-      <strong>Settings</strong>
-      <i class="fa-solid fa-xmark" onclick="toggleMenu()"></i>
-    </div>
-    <ul class="drawer-list">
-      <li onclick="alert('Account Details')"><i class="fa-regular fa-user"></i> Account & Profile</li>
-      <li onclick="alert('Saved Items')"><i class="fa-regular fa-bookmark"></i> Saved</li>
-      <li onclick="alert('Your Activity')"><i class="fa-solid fa-clock-rotate-left"></i> Your Activity</li>
-      <li onclick="alert('Notifications')"><i class="fa-regular fa-bell"></i> Notifications</li>
-      <li onclick="alert('Privacy Settings')"><i class="fa-solid fa-lock"></i> Privacy & Security</li>
-      <li onclick="document.body.style.backgroundColor = '#1a1a1a';"><i class="fa-solid fa-moon"></i> Dark Theme</li>
-      <li onclick="alert('Help Center')"><i class="fa-regular fa-circle-question"></i> Help & Feedback</li>
-      <li onclick="window.location.reload()"><i class="fa-solid fa-right-from-bracket"></i> Logout</li>
-    </ul>
-  </aside>
-
-  <!-- VIDEO PLAYER MODAL -->
-  <div class="video-modal" id="videoPlayer">
-    <button class="close-video" onclick="closeVideo()"><i class="fa-solid fa-xmark"></i></button>
-    <iframe id="videoIframe" src="" allow="autoplay; fullscreen"></iframe>
-  </div>
-
   <script>
-    // ================= CREDENTIALS =================
     const YT_API = "AIzaSyBmBxgSoangpIJOuisVqRNrMj1nP5UFiWQ";
     const GEMINI_API = "AQ.Ab8RN6LQ-JCPDbo96b749XRuedHg2mUycAlKeXxxY5bSrN0mCA";
     
-    // ================= DUMMY DATA FOR INSTANT LOAD =================
     const mockVideos = [
-      { id: "jfKfPfyJRdk", title: "Lofi Beats to Relax/Study", creator: "Lofi Girl", thumb: "https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
-      { id: "kJQP7kiw5Fk", title: "Cyberpunk Night Drive", creator: "Neon Vibes", thumb: "https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
-      { id: "3JZ_D3ELwOQ", title: "Next Gen Web Code", creator: "Tanmay Studio", thumb: "https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg" }
+      { id: "jfKfPfyJRdk", title: "Lofi Beats to Relax/Study", creator: "Lofi Girl", views: "2.4M views", thumb: "https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
+      { id: "kJQP7kiw5Fk", title: "Cyberpunk Night Drive", creator: "Neon Vibes", views: "850K views", thumb: "https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
+      { id: "3JZ_D3ELwOQ", title: "Web Development 2026", creator: "Tanmay Studio", views: "1.1M views", thumb: "https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg" }
     ];
 
-    // Native HTML5 Vertical Videos (No YT Logo!)
-    const nativeReels = [
-      { url: "https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4", author: "@nature_vibes", desc: "Beautiful yellow flowers #nature" },
-      { url: "https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-smart-watch-4731-large.mp4", author: "@tech_guru", desc: "Checking out the new smartwatch #tech" },
-      { url: "https://assets.mixkit.co/videos/preview/mixkit-urban-landscape-with-a-city-traffic-4008-large.mp4", author: "@city_life", desc: "Busy city streets today #urban" }
-    ];
+    const shortsData = ["7m16dFI1AF8", "YqH4eWPNu-8", "5qap5aO4i9A"]; // Reliable YT Shorts IDs
 
-    // ================= INIT =================
     window.onload = () => {
       loadHomeFeed(mockVideos);
-      loadReelsFeed();
+      loadReels();
       setupSearch();
     };
 
-    // ================= TAB SWITCHING LOGIC =================
-    function switchTab(targetId, clickedBtn) {
-      // 1. Hide all sections
-      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-      // 2. Remove active class from ALL nav buttons (including Create)
-      document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
-      
-      // 3. Show selected section
+    function switchTab(targetId, btn) {
+      document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
       document.getElementById(targetId).classList.add('active');
-      // 4. Highlight only the clicked button
-      if(clickedBtn) clickedBtn.classList.add('active');
-
-      // Auto-play/pause logic for Reels
-      if(targetId !== 'tab-reels') pauseAllReels();
+      if(btn) btn.classList.add('active');
+      
+      // Stop video if leaving player
+      if(targetId !== 'tab-player') document.getElementById('mainPlayer').src = "";
     }
 
-    // ================= HOME & SEARCH (YOUTUBE) =================
     function loadHomeFeed(data) {
       const feed = document.getElementById("homeFeed");
       feed.innerHTML = data.map(v => `
-        <div class="media-card" onclick="playVideo('${v.id}')">
+        <div class="media-card" onclick="openPlayer('${v.id}', '${v.title.replace(/'/g, "")}', '${v.creator}', '${v.views}')">
           <div class="thumbnail-box"><img src="${v.thumb}"></div>
           <div class="media-details">
-            <div class="media-title">${v.title}</div>
-            <div class="media-meta"><span>${v.creator}</span></div>
+            <div class="channel-pic"></div>
+            <div class="media-info">
+              <div class="media-title">${v.title}</div>
+              <div class="media-meta">${v.creator} • ${v.views}</div>
+            </div>
           </div>
+        </div>
+      `).join('');
+    }
+
+    function openPlayer(id, title, creator, views) {
+      document.getElementById('pTitle').innerText = title;
+      document.getElementById('pChannel').innerText = creator;
+      document.getElementById('pViews').innerText = views || "Trending now";
+      
+      switchTab('tab-player');
+      document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+    }
+
+    function loadReels() {
+      const container = document.getElementById("reelsFeed");
+      container.innerHTML = shortsData.map(id => `
+        <div class="reel-card">
+          <iframe src="https://www.youtube.com/embed/${id}?autoplay=1&mute=1&loop=1&playlist=${id}&controls=0&modestbranding=1" allow="autoplay; fullscreen"></iframe>
         </div>
       `).join('');
     }
 
     function setupSearch() {
-      const searchBtn = document.getElementById('searchBtn');
       const input = document.getElementById('searchInput');
-      
       const doSearch = async () => {
         if(!input.value.trim()) return;
-        switchTab('tab-home', document.querySelector('[data-target="tab-home"]'));
+        switchTab('tab-home', document.querySelector('.nav-tab'));
         document.getElementById("homeFeed").innerHTML = "<p style='padding:20px'>Searching...</p>";
-        
         try {
           const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(input.value)}&type=video&key=${YT_API}`);
           const data = await res.json();
-          if(data.items) {
-            const mapped = data.items.map(i => ({
-              id: i.id.videoId, title: i.snippet.title, creator: i.snippet.channelTitle, thumb: i.snippet.thumbnails.high.url
-            }));
-            loadHomeFeed(mapped);
-          }
+          const mapped = data.items.map(i => ({
+            id: i.id.videoId, title: i.snippet.title, creator: i.snippet.channelTitle, views: "New", thumb: i.snippet.thumbnails.high.url
+          }));
+          loadHomeFeed(mapped);
         } catch(e) {
-          alert("Search Limit Reached or Error. Loading defaults.");
           loadHomeFeed(mockVideos);
         }
       };
-
-      searchBtn.onclick = doSearch;
+      document.getElementById('searchBtn').onclick = doSearch;
       input.onkeypress = (e) => { if(e.key === "Enter") doSearch(); };
     }
 
-    function playVideo(id) {
-      document.getElementById('videoPlayer').style.display = 'block';
-      // modestbranding=1 removes YT logo from player bar
-      document.getElementById('videoIframe').src = `https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0`;
-    }
-    function closeVideo() {
-      document.getElementById('videoPlayer').style.display = 'none';
-      document.getElementById('videoIframe').src = "";
-    }
-
-    // ================= REELS (NATIVE HTML5 - INFINITE SCROLL) =================
-    function loadReelsFeed() {
-      const container = document.getElementById("reelsFeed");
-      // Load array 3 times to simulate long scroll
-      const fullList = [...nativeReels, ...nativeReels, ...nativeReels]; 
-      
-      container.innerHTML = fullList.map(r => `
-        <div class="reel-card">
-          <video class="reel-video" src="${r.url}" loop muted playsinline></video>
-          <div class="reel-ui">
-            <div class="reel-author"><i class="fa-solid fa-circle-user"></i> ${r.author}</div>
-            <div class="reel-desc">${r.desc}</div>
-          </div>
-          <div class="reel-actions">
-            <div class="action-icon" onclick="this.classList.toggle('heart-active')"><i class="fa-solid fa-heart"></i><span>Like</span></div>
-            <div class="action-icon" onclick="alert('Saved!')"><i class="fa-solid fa-bookmark"></i><span>Save</span></div>
-            <div class="action-icon" onclick="toggleMute(this)"><i class="fa-solid fa-volume-xmark"></i><span>Unmute</span></div>
-          </div>
-        </div>
-      `).join('');
-
-      // Intersection Observer for AutoPlay/Pause on Scroll
-      const videos = document.querySelectorAll('.reel-video');
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if(entry.isIntersecting) {
-            entry.target.play();
-          } else {
-            entry.target.pause();
-          }
-        });
-      }, { threshold: 0.6 });
-      
-      videos.forEach(v => observer.observe(v));
-    }
-
-    function pauseAllReels() {
-      document.querySelectorAll('.reel-video').forEach(v => v.pause());
-    }
-
-    function toggleMute(btn) {
-      const video = btn.closest('.reel-card').querySelector('video');
-      video.muted = !video.muted;
-      btn.innerHTML = video.muted ? `<i class="fa-solid fa-volume-xmark"></i><span>Unmute</span>` : `<i class="fa-solid fa-volume-high"></i><span>Mute</span>`;
-    }
-
-    // ================= AI CHAT =================
     function toggleAI() {
-      const win = document.getElementById('aiWindow');
-      win.classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
+      document.getElementById('aiWindow').classList.toggle('open');
     }
 
     async function askGemini() {
@@ -530,7 +294,8 @@
       box.innerHTML = `<div style="margin-bottom:10px"><strong>You:</strong> ${q}</div><div><i class="fa-solid fa-spinner fa-spin"></i> Typing...</div>`;
       
       try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API}`, {
+        // Updated to 1.5-flash for reliability
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API}`, {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: [{ text: q }] }] })
         });
@@ -538,26 +303,7 @@
         const reply = data.candidates[0].content.parts[0].text;
         box.innerHTML = `<div style="margin-bottom:10px"><strong>You:</strong> ${q}</div><div><strong>AI:</strong> ${reply}</div>`;
       } catch(e) {
-        box.innerHTML = "Error fetching AI response.";
-      }
-    }
-
-    // ================= SIDE MENU =================
-    function toggleMenu() {
-      document.getElementById('settingsDrawer').classList.toggle('open');
-      document.getElementById('overlay').classList.toggle('show');
-    }
-
-    // ================= FIREBASE AUTH =================
-    async function handleAuth() {
-      if(window.FirebaseBridge) {
-        const { auth, provider, signInWithPopup } = window.FirebaseBridge;
-        try {
-          const res = await signInWithPopup(auth, provider);
-          document.getElementById('profileName').innerText = res.user.displayName;
-          document.getElementById('profilePic').src = res.user.photoURL;
-          alert("Logged in as " + res.user.displayName);
-        } catch(e) { console.log(e); }
+        box.innerHTML = "Error connecting to AI. Please try again.";
       }
     }
   </script>
