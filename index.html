@@ -23,125 +23,167 @@
     body { background-color: var(--bg-dark); color: var(--text-main); height: 100dvh; width: 100vw; overflow: hidden; display: flex; flex-direction: column; }
 
     /* HEADER */
-    header { height: var(--header-height); background: var(--bg-dark); display: flex; align-items: center; padding: 0 16px; justify-content: space-between; border-bottom: 1px solid #222; z-index: 100; }
-    .logo-container { display: flex; align-items: center; gap: 5px; font-size: 1.2rem; font-weight: 700; color: white; }
-    .logo-container i { color: var(--accent-blue); font-size: 1.4rem; }
+    header { height: var(--header-height); background: var(--bg-dark); display: flex; align-items: center; padding: 0 12px; justify-content: space-between; border-bottom: 1px solid #222; z-index: 100; }
+    .brand-logo { font-size: 1.1rem; font-weight: 900; display: flex; align-items: center; gap: 5px; }
+    .brand-logo i { color: var(--accent-blue); font-size: 1.3rem; }
     
-    .search-bar { display: flex; align-items: center; background: #222; border-radius: 20px; padding: 6px 14px; flex: 1; max-width: 220px; margin: 0 10px; border: 1px solid #333; }
-    .search-bar input { background: transparent; border: none; color: white; width: 100%; font-size: 0.95rem; outline: none; }
-    .search-bar button { background: none; border: none; color: var(--text-sub); font-size: 1.1rem; cursor: pointer; }
+    .search-container { flex: 1; display: flex; align-items: center; background: #222; border-radius: 20px; padding: 4px 12px; border: 1px solid #333; margin: 0 10px; }
+    .search-box { flex: 1; background: transparent; border: none; color: white; padding: 6px 5px; font-size: 0.95rem; outline: none; }
+    .search-btn { background: none; border: none; color: var(--text-main); font-size: 1.1rem; padding: 4px; cursor: pointer; }
     
-    .header-actions i { font-size: 1.3rem; margin-left: 15px; cursor: pointer; color: white; }
+    .header-icons i { font-size: 1.3rem; cursor: pointer; }
 
     /* MAIN */
-    main { flex: 1; overflow-y: auto; position: relative; padding-bottom: 20px; }
-    .view-section { display: none; min-height: 100%; }
+    main { flex: 1; height: calc(100dvh - var(--header-height) - var(--bottom-nav-height)); overflow-y: auto; position: relative; }
+    .view-section { display: none; min-height: 100%; padding-bottom: 20px; }
     .view-section.active { display: block; }
 
     /* HOME FEED */
-    .media-card { width: 100%; margin-bottom: 15px; cursor: pointer; }
+    .grid-feed { display: flex; flex-direction: column; gap: 12px; }
+    .media-card { width: 100%; cursor: pointer; }
     .thumbnail-box { width: 100vw; aspect-ratio: 16/9; background: #222; position: relative; }
     .thumbnail-box img { width: 100%; height: 100%; object-fit: cover; }
-    .media-info { display: flex; padding: 12px 16px; gap: 12px; }
-    .channel-avatar { width: 36px; height: 36px; border-radius: 50%; background: #333; }
-    .text-details { flex: 1; }
-    .media-title { font-size: 0.95rem; font-weight: 500; line-height: 1.3; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .media-info { padding: 12px 15px; display: flex; gap: 12px; }
+    .channel-pic { width: 36px; height: 36px; border-radius: 50%; background: #333; }
+    .media-text { flex: 1; }
+    .media-title { font-size: 0.95rem; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; }
     .media-meta { font-size: 0.8rem; color: var(--text-sub); }
 
-    /* PLAYER VIEW */
-    #tab-player { background: var(--bg-dark); position: absolute; top: 0; left: 0; width: 100%; z-index: 50; }
-    .video-wrapper { width: 100vw; aspect-ratio: 16/9; background: #000; position: sticky; top: 0; z-index: 10; }
-    .video-wrapper iframe { width: 100%; height: 100%; border: none; }
-    
-    .player-content { padding: 12px 16px; }
-    .p-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; line-height: 1.3; }
-    .p-stats { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px; }
-    
-    .channel-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .channel-row img { width: 36px; height: 36px; border-radius: 50%; }
-    .c-info { flex: 1; }
-    .c-name { font-weight: 500; font-size: 1rem; }
-    .c-subs { font-size: 0.75rem; color: var(--text-sub); }
-    .sub-btn { background: white; color: black; border: none; border-radius: 18px; padding: 8px 16px; font-weight: 500; font-size: 0.9rem; }
-    
-    .action-row { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; }
-    .action-row::-webkit-scrollbar { display: none; }
-    .a-btn { background: #272727; color: white; border: none; border-radius: 18px; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: 0.9rem; white-space: nowrap; }
+    /* PLAYER */
+    #tab-player { background: var(--bg-dark); z-index: 50; position: absolute; top: 0; left: 0; width: 100%; }
+    .player-video-container { width: 100vw; aspect-ratio: 16/9; background: #000; position: sticky; top: 0; z-index: 10; }
+    .player-video-container iframe { width: 100%; height: 100%; border: none; }
+    .player-details { padding: 15px; }
+    .player-title { font-size: 1.15rem; font-weight: 700; margin-bottom: 5px; }
+    .player-views { font-size: 0.85rem; color: var(--text-sub); margin-bottom: 15px; }
 
+    /* PROFILE */
+    .profile-header { padding: 20px; border-bottom: 1px solid #222; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; }
+    .prof-pic { width: 90px; height: 90px; border-radius: 50%; background: #333; object-fit: cover; border: 2px solid var(--accent-blue); }
+    .prof-name { font-size: 1.3rem; font-weight: 700; }
+    .prof-email { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 10px; }
+    .btn-login { background: var(--accent-blue); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; max-width: 200px; }
+    .btn-logout { background: #ff4444; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; display: none; margin-top: 10px; }
+
+    /* REELS */
+    .reels-container { height: 100%; background: #000; scroll-snap-type: y mandatory; overflow-y: scroll; }
+    .reel-card { width: 100vw; height: calc(100dvh - var(--header-height) - var(--bottom-nav-height)); scroll-snap-align: start; position: relative; }
+    .reel-card video { width: 100%; height: 100%; object-fit: cover; }
+    
+    .reel-ui-wrapper { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 15px; }
+    .r-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: white; }
+    .r-user img { width: 36px; height: 36px; border-radius: 50%; }
+    .reel-right-actions { display: flex; flex-direction: column; gap: 20px; align-items: center; color: white; font-size: 1.8rem; }
+    
     /* AI CHAT */
-    .ai-fab { position: fixed; bottom: 75px; right: 15px; width: 50px; height: 50px; border-radius: 50%; background: #fff; color: #000; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 150; cursor: pointer; }
-    .ai-chat-window { position: fixed; bottom: -100%; left: 0; width: 100%; height: 60dvh; background: #212121; border-top-left-radius: 16px; border-top-right-radius: 16px; z-index: 200; transition: 0.3s; display: flex; flex-direction: column; box-shadow: 0 -5px 20px rgba(0,0,0,0.8); }
+    .ai-fab { position: fixed; bottom: 80px; right: 15px; width: 55px; height: 55px; border-radius: 50%; background: #fff; color: #000; display: flex; justify-content: center; align-items: center; font-size: 1.6rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 150; cursor: pointer; }
+    .ai-chat-window { position: fixed; bottom: -100%; left: 0; width: 100%; height: 75dvh; background: #1a1a1a; border-top-left-radius: 20px; border-top-right-radius: 20px; z-index: 200; transition: 0.3s; display: flex; flex-direction: column; }
     .ai-chat-window.open { bottom: 0; }
-    .ai-head { padding: 15px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; font-weight: 500; }
-    .ai-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 0.9rem; line-height: 1.5; display: flex; flex-direction: column; gap: 10px; }
-    .msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; }
+    .ai-header { padding: 15px 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; font-weight: 600; }
+    .ai-body { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+    .msg { padding: 10px 15px; border-radius: 18px; max-width: 85%; font-size: 0.95rem; line-height: 1.4; }
     .msg-user { background: var(--accent-blue); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
     .msg-ai { background: #333; color: white; align-self: flex-start; border-bottom-left-radius: 4px; }
-    .ai-foot { padding: 10px; background: #212121; display: flex; gap: 10px; border-top: 1px solid #333; }
-    .ai-foot input { flex: 1; background: #333; border: none; border-radius: 20px; padding: 10px 15px; color: white; outline: none; }
-    .ai-foot button { background: none; border: none; color: var(--accent-blue); font-size: 1.4rem; padding: 0 10px; }
+    .ai-footer { padding: 10px; display: flex; gap: 10px; border-top: 1px solid #333; }
+    .ai-footer input { flex: 1; border-radius: 20px; border: none; background: #222; padding: 12px; color: white; outline: none; }
+    .ai-footer button { background: none; border: none; color: var(--accent-blue); font-size: 1.5rem; }
 
     /* BOTTOM NAV */
     .bottom-bar { height: var(--bottom-nav-height); background: var(--bg-dark); border-top: 1px solid #222; display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; width: 100%; z-index: 100; }
-    .nav-tab { background: none; border: none; color: var(--text-main); display: flex; flex-direction: column; align-items: center; font-size: 0.65rem; gap: 4px; opacity: 0.6; }
-    .nav-tab i { font-size: 1.4rem; }
+    .nav-tab { background: none; border: none; color: var(--text-main); display: flex; flex-direction: column; align-items: center; font-size: 0.7rem; gap: 4px; cursor: pointer; opacity: 0.6; }
+    .nav-tab i { font-size: 1.5rem; }
     .nav-tab.active { opacity: 1; }
   </style>
 </head>
 <body>
 
+  <!-- FIREBASE MODULES (Fixed Syntax) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.9.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC0oqld16EcbNUkYm3rOFLuId1iDFoLGJo",
+      authDomain: "studio-1376926805-1d7be.firebaseapp.com",
+      projectId: "studio-1376926805-1d7be"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    window.FirebaseBridge = { auth, provider, signInWithPopup, signOut, onAuthStateChanged };
+
+    // Auto-check Login State
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        document.getElementById('profName').innerText = user.displayName;
+        document.getElementById('profEmail').innerText = user.email;
+        document.getElementById('profPic').src = user.photoURL;
+        document.getElementById('loginBtn').style.display = 'none';
+        document.getElementById('logoutBtn').style.display = 'block';
+      } else {
+        document.getElementById('profName').innerText = "Guest User";
+        document.getElementById('profEmail').innerText = "Not logged in";
+        document.getElementById('profPic').src = "https://ui-avatars.com/api/?name=Guest&background=333&color=fff";
+        document.getElementById('loginBtn').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'none';
+      }
+    });
+  </script>
+
   <header>
-    <div class="logo-container" onclick="switchTab('tab-home')"><i class="fa-solid fa-play"></i> TANMAYS</div>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="Search..." />
-      <button onclick="executeSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
-    </div>
-    <div class="header-actions">
-      <i class="fa-solid fa-ellipsis-vertical" onclick="alert('Settings')"></i>
+    <div class="brand-logo" onclick="switchTab('tab-home')"><i class="fa-solid fa-play"></i> TANMAYS</div>
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-box" placeholder="Search Tube or Gram..." />
+      <button class="search-btn" onclick="executeSmartSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
     </div>
   </header>
 
-  <main>
+  <main id="mainScroll">
+    <!-- HOME FEED (YT) -->
     <section id="tab-home" class="view-section active">
-      <div id="homeFeed"></div>
+      <div class="grid-feed" id="homeFeed"></div>
     </section>
 
+    <!-- PLAYER -->
     <section id="tab-player" class="view-section">
-      <div class="video-wrapper">
+      <div class="player-video-container">
         <iframe id="mainPlayer" src="" allow="autoplay; fullscreen"></iframe>
       </div>
-      <div class="player-content">
-        <div class="p-title" id="pTitle">Video Title</div>
-        <div class="p-stats" id="pViews">Views</div>
-        
-        <div class="channel-row">
-          <img src="" id="pAvatar">
-          <div class="c-info">
-            <div class="c-name" id="pChannel">Channel</div>
-            <div class="c-subs">1.2M subscribers</div>
-          </div>
-          <button class="sub-btn">Subscribe</button>
-        </div>
-        
-        <div class="action-row">
-          <button class="a-btn"><i class="fa-regular fa-thumbs-up"></i> 124K</button>
-          <button class="a-btn"><i class="fa-solid fa-share"></i> Share</button>
-          <button class="a-btn"><i class="fa-solid fa-download"></i> Download</button>
-        </div>
+      <div class="player-details">
+        <h1 class="player-title" id="pTitle">Title</h1>
+        <p class="player-views" id="pViews">Views</p>
+      </div>
+    </section>
+
+    <!-- REELS -->
+    <section id="tab-reels" class="view-section" style="padding: 0;">
+      <div class="reels-container" id="reelsFeed"></div>
+    </section>
+
+    <!-- GOOGLE AUTH PROFILE -->
+    <section id="tab-profile" class="view-section">
+      <div class="profile-header">
+        <img src="https://ui-avatars.com/api/?name=Guest&background=333&color=fff" class="prof-pic" id="profPic">
+        <div class="prof-name" id="profName">Guest User</div>
+        <div class="prof-email" id="profEmail">Not logged in</div>
+        <button class="btn-login" id="loginBtn" onclick="handleLogin()">Login with Google</button>
+        <button class="btn-logout" id="logoutBtn" onclick="handleLogout()">Logout</button>
       </div>
     </section>
   </main>
 
   <div class="ai-fab" onclick="toggleAI()"><i class="fa-solid fa-sparkles"></i></div>
   <div class="ai-chat-window" id="aiWindow">
-    <div class="ai-head">
+    <div class="ai-header">
       ✨ Tanmays Intelligence
-      <i class="fa-solid fa-chevron-down" onclick="toggleAI()"></i>
+      <i class="fa-solid fa-chevron-down" onclick="toggleAI()" style="cursor:pointer;"></i>
     </div>
     <div class="ai-body" id="aiResponse">
-      <div class="msg msg-ai">Hi! System is online. Ask me anything.</div>
+      <div class="msg msg-ai">System is online. Note: If you get a 401 error, your Gemini API Key is invalid.</div>
     </div>
-    <div class="ai-foot">
+    <div class="ai-footer">
       <input type="text" id="aiInput" placeholder="Message...">
       <button onclick="askGemini()"><i class="fa-solid fa-paper-plane"></i></button>
     </div>
@@ -149,22 +191,32 @@
 
   <nav class="bottom-bar">
     <button class="nav-tab active" onclick="switchTab('tab-home', this)"><i class="fa-solid fa-house"></i><span>Home</span></button>
-    <button class="nav-tab" onclick="alert('Reels Coming Soon')"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></button>
-    <button class="nav-tab" onclick="alert('Profile Hub')"><i class="fa-regular fa-circle-user"></i><span>You</span></button>
+    <button class="nav-tab" onclick="switchTab('tab-reels', this)"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></button>
+    <button class="nav-tab" onclick="switchTab('tab-profile', this)"><i class="fa-regular fa-circle-user"></i><span>You</span></button>
   </nav>
 
   <script>
     const YT_API = "AIzaSyBmBxgSoangpIJOuisVqRNrMj1nP5UFiWQ";
     const GEMINI_API = "AQ.Ab8RN6LQ-JCPDbo96b749XRuedHg2mUycAlKeXxxY5bSrN0mCA";
     
-    const mockData = [
-      { id: "jfKfPfyJRdk", title: "Lofi Beats to Relax/Study", creator: "Lofi Girl", views: "2.4M views", thumb: "https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
-      { id: "kJQP7kiw5Fk", title: "Cyberpunk Night Drive", creator: "Neon Vibes", views: "850K views", thumb: "https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
-      { id: "3JZ_D3ELwOQ", title: "Web Development Masterclass", creator: "Tanmay Studio", views: "1.1M views", thumb: "https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg" }
+    const mockVideos = [
+      { id: "jfKfPfyJRdk", title: "Lofi Beats to Relax", creator: "Lofi Girl", views: "2.4M", thumb: "https://i.ytimg.com/vi/jfKfPfyJRdk/hqdefault.jpg" },
+      { id: "kJQP7kiw5Fk", title: "Cyberpunk Night Drive", creator: "Neon Vibes", views: "850K", thumb: "https://i.ytimg.com/vi/kJQP7kiw5Fk/hqdefault.jpg" },
+      { id: "3JZ_D3ELwOQ", title: "Web Dev 2026", creator: "Tanmay Studio", views: "1.1M", thumb: "https://i.ytimg.com/vi/3JZ_D3ELwOQ/hqdefault.jpg" },
+      { id: "t0Q2otsqC4I", title: "Tom & Jerry Classics", creator: "WB Kids", views: "10M", thumb: "https://i.ytimg.com/vi/t0Q2otsqC4I/hqdefault.jpg" }
     ];
 
-    window.onload = () => { loadHomeFeed(mockData); };
+    const nativeInstaReels = [
+      { url: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-1232-large.mp4", author: "neon_girl" },
+      { url: "https://assets.mixkit.co/videos/preview/mixkit-hands-typing-on-a-laptop-4017-large.mp4", author: "dev_tanmay" }
+    ];
 
+    window.onload = () => {
+      loadHomeFeed(mockVideos);
+      loadInstaReels();
+    };
+
+    // ================= TABS =================
     function switchTab(targetId, btn) {
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
@@ -173,13 +225,14 @@
       if(targetId !== 'tab-player') document.getElementById('mainPlayer').src = "";
     }
 
+    // ================= HOME & SEARCH =================
     function loadHomeFeed(data) {
       document.getElementById("homeFeed").innerHTML = data.map(v => `
         <div class="media-card" onclick="openPlayer('${v.id}', '${v.title.replace(/'/g, "")}', '${v.creator}', '${v.views}')">
           <div class="thumbnail-box"><img src="${v.thumb}"></div>
           <div class="media-info">
-            <img src="https://ui-avatars.com/api/?name=${v.creator}&background=random" class="channel-avatar">
-            <div class="text-details">
+            <img src="https://ui-avatars.com/api/?name=${v.creator}&background=random" class="channel-pic">
+            <div class="media-text">
               <div class="media-title">${v.title}</div>
               <div class="media-meta">${v.creator} • ${v.views}</div>
             </div>
@@ -190,33 +243,72 @@
 
     function openPlayer(id, title, creator, views) {
       document.getElementById('pTitle').innerText = title;
-      document.getElementById('pChannel').innerText = creator;
-      document.getElementById('pViews').innerText = views;
-      document.getElementById('pAvatar').src = `https://ui-avatars.com/api/?name=${creator}&background=random`;
-      
+      document.getElementById('pViews').innerText = `${creator} • ${views} views`;
       switchTab('tab-player');
-      // Added parameters to hide standard YouTube clutter as much as possible
-      document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3&showinfo=0`;
+      document.getElementById('mainPlayer').src = `https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&iv_load_policy=3`;
     }
 
-    async function executeSearch() {
+    async function executeSmartSearch() {
       let query = document.getElementById('searchInput').value.trim();
       if(!query) return;
+
+      if(query.toLowerCase().includes('gram') || query.toLowerCase().includes('instagram')) {
+        switchTab('tab-reels', document.querySelectorAll('.nav-tab')[1]);
+        return;
+      }
+
       switchTab('tab-home', document.querySelectorAll('.nav-tab')[0]);
-      document.getElementById("homeFeed").innerHTML = "<div style='padding:20px; text-align:center;'>Searching...</div>";
-      
       try {
         const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=10&q=${encodeURIComponent(query)}&type=video&key=${YT_API}`);
         const data = await res.json();
         if(data.items) {
           const mapped = data.items.map(i => ({
-            id: i.id.videoId, title: i.snippet.title, creator: i.snippet.channelTitle, views: "Trending", thumb: i.snippet.thumbnails.high.url
+            id: i.id.videoId, title: i.snippet.title, creator: i.snippet.channelTitle, views: "New", thumb: i.snippet.thumbnails.high.url
           }));
           loadHomeFeed(mapped);
         }
-      } catch(e) { loadHomeFeed(mockData); }
+      } catch(e) { loadHomeFeed(mockVideos); }
     }
 
+    // ================= REELS =================
+    function loadInstaReels() {
+      document.getElementById("reelsFeed").innerHTML = [...nativeInstaReels, ...nativeInstaReels].map(r => `
+        <div class="reel-card">
+          <video src="${r.url}" loop playsinline></video>
+          <div class="reel-ui-wrapper">
+            <div class="r-user"><img src="https://ui-avatars.com/api/?name=${r.author}"><strong>${r.author}</strong></div>
+            <div class="reel-right-actions">
+              <i class="fa-solid fa-heart" onclick="this.style.color='#ff3040'"></i>
+              <i class="fa-solid fa-ellipsis-vertical"></i>
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      const videos = document.querySelectorAll('#reelsFeed video');
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if(entry.isIntersecting) entry.target.play();
+          else entry.target.pause();
+        });
+      }, { threshold: 0.6 });
+      videos.forEach(v => observer.observe(v));
+    }
+
+    // ================= AUTHENTICATION =================
+    async function handleLogin() {
+      if(!window.FirebaseBridge) return alert("Firebase is loading. Ensure you are running via Live Server (Port 5500).");
+      const { auth, provider, signInWithPopup } = window.FirebaseBridge;
+      try { await signInWithPopup(auth, provider); } catch(err) { alert(err.message); }
+    }
+
+    async function handleLogout() {
+      if(window.FirebaseBridge) {
+        await window.FirebaseBridge.signOut(window.FirebaseBridge.auth);
+      }
+    }
+
+    // ================= AI ENGINE (Safe DOM) =================
     function toggleAI() { document.getElementById('aiWindow').classList.toggle('open'); }
     
     async function askGemini() {
@@ -227,7 +319,10 @@
       const q = input.value;
       input.value = "";
       box.innerHTML += `<div class="msg msg-user">${q}</div>`;
-      box.innerHTML += `<div class="msg msg-ai" id="loadingAI">Processing...</div>`;
+      
+      // Creating a safe loading element ID
+      const loadId = 'load-' + Date.now();
+      box.innerHTML += `<div class="msg msg-ai" id="${loadId}"><i class="fa-solid fa-circle-notch fa-spin"></i> Typing...</div>`;
       box.scrollTop = box.scrollHeight;
       
       try {
@@ -235,17 +330,19 @@
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ contents: [{ parts: [{ text: q }] }] })
         });
-        
         const data = await res.json();
-        document.getElementById('loadingAI').remove();
+        
+        const loader = document.getElementById(loadId);
+        if(loader) loader.remove();
         
         if (data.error) throw new Error(data.error.message);
         
         const reply = data.candidates[0].content.parts[0].text;
         box.innerHTML += `<div class="msg msg-ai">${reply.replace(/\n/g, '<br>')}</div>`;
       } catch(e) {
-        document.getElementById('loadingAI').remove();
-        box.innerHTML += `<div class="msg msg-ai" style="color: #ff5555;">Error: ${e.message || "Failed to connect to AI."}</div>`;
+        const loader = document.getElementById(loadId);
+        if(loader) loader.remove();
+        box.innerHTML += `<div class="msg msg-ai" style="color: #ff5555;">API Error: Check API Key or Network.</div>`;
       }
       box.scrollTop = box.scrollHeight;
     }
